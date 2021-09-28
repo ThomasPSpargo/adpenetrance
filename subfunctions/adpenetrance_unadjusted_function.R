@@ -29,7 +29,7 @@ adpenetrance.unadjusted <- function(N, MF=0, MS=0, MA=0, MU=0, PA=0, PF=0, MF_SE
     } else if(MF==0 && MS==0 && MU>0 && MA>0) {
       states="au"
     } else {
-      stop("No valid disease state combination has been defined. Variant frequency or RX estimates should be defined for any two or three of the familial, sporadic, and unaffected states or the affected and unaffected states. Please check that variant frequency estimates have been defined for a valid combination of states or that the 'RX' and 'states' terms are properly defined.")
+      stop("No valid disease state combination has been defined. Variant frequency or RX estimates should be defined for any two or three of the familial, sporadic, and unaffected states or the affected and unaffected states. Please check that variant frequency estimates have been defined for a valid combination of states or that the 'RX' and 'states' arguments are properly defined.")
     }
   } else if(!any(c('fsu','fu','fs','au','su') %in% states)){ #Change states value to "incorrect" if nothing has been defined
       stop("No valid disease state combination has been defined. Variant frequency or RX estimates should be defined for any two or three of the familial, sporadic, and unaffected states or the affected and unaffected states. Please check which states have been indicated in the 'states' object")
@@ -147,7 +147,7 @@ adpenetrance.unadjusted <- function(N, MF=0, MS=0, MA=0, MU=0, PA=0, PF=0, MF_SE
       
     } else { #If no valid conditions are satisfied
       
-      stop("No valid disease state combination has been defined. Variant frequency or RX estimates should be defined for any two or three of the familial, sporadic, and unaffected states or the affected and unaffected states. Please check that variant frequency estimates have been defined for a valid combination of states or that the 'RX' and 'states' terms are properly defined.")
+      stop("No valid disease state combination has been defined. Variant frequency or RX estimates should be defined for any two or three of the familial, sporadic, and unaffected states or the affected and unaffected states. Please check that variant frequency estimates have been defined for a valid combination of states or that the 'RX' and 'states' arguments are properly defined.")
       
     }
 
