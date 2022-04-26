@@ -42,11 +42,11 @@ for(k in 1:length(Cases_c1_2$Population_sampled)){
                            #PA=Cases_c1_2[k,"PA"]
                            )$output
   
-  #Matrix of output
-  est_out_fs <- matrix(c(Cases_c1_2$Population_sampled[k],2,
-    cases_out[1,1], cases_out[1,2], cases_out[1,3],
-    cases_out[3,1], cases_out[3,2], cases_out[3,3],
-    cases_out[4,1], cases_out[4,2], cases_out[4,3]),nrow=1)
+  #Vectorise output
+  est_out_fs <- c(2,
+                  cases_out[1,1], cases_out[1,2], cases_out[1,3],
+                  cases_out[3,1], cases_out[3,2], cases_out[3,3],
+                  cases_out[4,1], cases_out[4,2], cases_out[4,3])
     
   
   
@@ -67,11 +67,11 @@ for(k in 1:length(Cases_c1_2$Population_sampled)){
                               PA=1/Cases_c1_2[k,"PA"]
                               )$output
     
-    #Matrix of output
-    est_out_fsu <- matrix(c(Cases_c1_2$Population_sampled[k],1,
-                        cases_out[1,1], cases_out[1,2], cases_out[1,3],
-                        cases_out[3,1], cases_out[3,2], cases_out[3,3],
-                        cases_out[4,1], cases_out[4,2], cases_out[4,3]),nrow=1)
+    #Vectorise output
+    est_out_fsu <- c(1,
+                     cases_out[1,1], cases_out[1,2], cases_out[1,3],
+                     cases_out[3,1], cases_out[3,2], cases_out[3,3],
+                     cases_out[4,1], cases_out[4,2], cases_out[4,3])
     
     
     
@@ -90,11 +90,11 @@ for(k in 1:length(Cases_c1_2$Population_sampled)){
                               PA=1/Cases_c1_2[k,"PA"]
                               )$output
     
-    #Matrix of output
-    est_out_fu <- matrix(c(Cases_c1_2$Population_sampled[k],3,
-                            cases_out[1,1], cases_out[1,2], cases_out[1,3],
-                            cases_out[3,1], cases_out[3,2], cases_out[3,3],
-                            cases_out[4,1], cases_out[4,2], cases_out[4,3]),nrow=1)
+    #Vectorise output
+    est_out_fu <- c(3,
+                    cases_out[1,1], cases_out[1,2], cases_out[1,3],
+                    cases_out[3,1], cases_out[3,2], cases_out[3,3],
+                    cases_out[4,1], cases_out[4,2], cases_out[4,3])
     
     
     
@@ -112,19 +112,22 @@ for(k in 1:length(Cases_c1_2$Population_sampled)){
                               PA=1/Cases_c1_2[k,"PA"]
                               )$output
     
-    #Matrix of output
-    est_out_su <- matrix(c(Cases_c1_2$Population_sampled[k],4,
-                            cases_out[1,1], cases_out[1,2], cases_out[1,3],
-                            cases_out[3,1], cases_out[3,2], cases_out[3,3],
-                            cases_out[4,1], cases_out[4,2], cases_out[4,3]),nrow=1)
+    #Vectorise output
+    est_out_su <- c(4,
+                    cases_out[1,1], cases_out[1,2], cases_out[1,3],
+                    cases_out[3,1], cases_out[3,2], cases_out[3,3],
+                    cases_out[4,1], cases_out[4,2], cases_out[4,3])
     
     #Combine all the out objects, where all states have been modelled
     est_out <- rbind(est_out_fsu,est_out_fs,est_out_fu,est_out_su)
     
   } else {
     #If only fs modelled, take just that object
-    est_out <- est_out_fs
+    est_out <- matrix(est_out_fs,nrow=1)
   }
+  
+  #Append the name of the population sampled and convert to data frame
+  est_out <- data.frame(Pop_Samp = Cases_c1_2$Population_sampled[k],est_out)
   
   #Combine into an overall output object
   if(k==1){
@@ -148,11 +151,11 @@ for(k in 1:length(Cases_c1_2$Population_sampled)){
                             PF=Cases[k,"PF"]
   )$output
   
-  #Matrix of output
-  est_out_A5V <- matrix(c(Cases$Population_sampled[k],2,
-                         cases_out[1,1], cases_out[1,2], cases_out[1,3],
-                         cases_out[3,1], cases_out[3,2], cases_out[3,3],
-                         cases_out[4,1], cases_out[4,2], cases_out[4,3]),nrow=1)
+  #Vector of output
+  est_out_A5V <- c(2,
+                   cases_out[1,1], cases_out[1,2], cases_out[1,3],
+                   cases_out[3,1], cases_out[3,2], cases_out[3,3],
+                   cases_out[4,1], cases_out[4,2], cases_out[4,3])
   
   #D91A
   #ObsX is the sporadic/(sporadic+unaffected) rate
@@ -166,11 +169,11 @@ for(k in 1:length(Cases_c1_2$Population_sampled)){
                             PA=1/Cases[k,"PA"]
   )$output
   
-  #Matrix of output
-  est_out_D91A <- matrix(c(Cases$Population_sampled[k],4,
-                         cases_out[1,1], cases_out[1,2], cases_out[1,3],
-                         cases_out[3,1], cases_out[3,2], cases_out[3,3],
-                         cases_out[4,1], cases_out[4,2], cases_out[4,3]),nrow=1)
+  #Vector of output
+  est_out_D91A <- c(4,
+                    cases_out[1,1], cases_out[1,2], cases_out[1,3],
+                    cases_out[3,1], cases_out[3,2], cases_out[3,3],
+                    cases_out[4,1], cases_out[4,2], cases_out[4,3])
   
   
   
@@ -185,18 +188,18 @@ for(k in 1:length(Cases_c1_2$Population_sampled)){
                             PF=Cases[k,"PF"]
   )$output
   
-  #Matrix of output
-  est_out_I114T <- matrix(c(Cases$Population_sampled[k],2,
-                         cases_out[1,1], cases_out[1,2], cases_out[1,3],
-                         cases_out[3,1], cases_out[3,2], cases_out[3,3],
-                         cases_out[4,1], cases_out[4,2], cases_out[4,3]),nrow=1)
+  #Vector of output
+  est_out_I114T <- c(2,
+                     cases_out[1,1], cases_out[1,2], cases_out[1,3],
+                     cases_out[3,1], cases_out[3,2], cases_out[3,3],
+                     cases_out[4,1], cases_out[4,2], cases_out[4,3])
   
   
   #Take main analyses for case study 3 and analyses for case 4, which are based on variant frequencies and lower confidence intervals
   Cases_c3_4   <- Cases[which(Cases$Case_study>=3 & Cases$Freq_fam>0),]
     
   #Prepare output matrix of nrows=4
-  est_out_c3_4 <- matrix(as.numeric(NA),ncol=11,nrow=length(Cases_c3_4$Population_sampled))
+  est_out_c3_4 <- matrix(NA_real_,ncol=10,nrow=length(Cases_c3_4$Population_sampled))
   
     #Loop across each row of input data
     for(k in 1:length(Cases_c3_4$Population_sampled)){
@@ -207,115 +210,74 @@ for(k in 1:length(Cases_c1_2$Population_sampled)){
                MS=Cases_c3_4[k,"Freq_spor"], MS_SE =(Cases_c3_4[k,"Freq_spor"]-Cases_c3_4[k,"Freq_spor_LCI"])/1.96,
                PF=Cases_c3_4[k,"PF"], Zout=1.96)$output
     
-      #Matrix of output
-      est_out_c3_4[k,] <- c(Cases_c3_4$Population_sampled[k],2,
-                                cases_out[1,1], cases_out[1,2], cases_out[1,3],
-                                cases_out[3,1], cases_out[3,2], cases_out[3,3],
-                                cases_out[4,1], cases_out[4,2], cases_out[4,3])
+      #Add vector to output matrix
+      est_out_c3_4[k,] <- c(2,
+                            cases_out[1,1], cases_out[1,2], cases_out[1,3],
+                            cases_out[3,1], cases_out[3,2], cases_out[3,3],
+                            cases_out[4,1], cases_out[4,2], cases_out[4,3])
       
     }
+  
+  #Append the name of the population sampled and convert to data frame
+  est_out_c3_4 <- data.frame(Pop_Samp = Cases_c3_4$Population_sampled,est_out_c3_4)
+  
     
     
-#Convert analyses into format for write-up
+#Convert analyses into format for write-up using custom function
+  
+  #Define custom function -x is the only argument, the orignal format results table
+  reformatTab<- function(x){
+    #Assign column names, to be called when summarising
+    colnames(x) <- c("Pop_sampled","states_modelled","RX_lower","RX_est","RX_upper",
+                              "Un_pen_lower","Un_pen_est","Un_pen_upper",
+                              "Adj_pen_lower","Adj_pen_est","Adj_pen_upper")
+    
+    x[3:ncol(x)] <- round(x[3:ncol(x)],digits=3) #Round numeric columns
+    
+    x$states_modelled <- factor(x$states_modelled,  #Convert states modelled into a factor variable
+                                levels = c(1,2,3,4), 
+                                labels = c("fsu","fs","fu","su")
+                                ) 
+    
+    
+    #Summarise results in "estimate (LowerCI, UpperCI)" format
+    sums <- cbind(paste0(x$Pop_sampled," (",x$states_modelled,")"),
+                  paste0(x$RX_est," (",x$RX_lower,", ",x$RX_upper,")"),
+                  paste0(x$Un_pen_est," (",x$Un_pen_lower,", ",x$Un_pen_upper,")"),
+                  paste0(x$Adj_pen_est," (",x$Adj_pen_lower,", ",x$Adj_pen_upper,")")
+    )
+    
+    
+    colnames(sums) <- c("Analysis", "RXobs","unadjusted penetrance", "adjusted penetrance") #Assign colnames
+    
+    return(sums)
+  }
+  
   
 #Prepare Table 2 results
   est_out_T2<- rbind(est_out_c1_2[19:26,], est_out_c3_4)
   
-  #Assign column names
-  colnames(est_out_T2) <- c("Pop_sampled","states_modelled","RX_lower","RX_est","RX_upper",
-                             "Un_pen_lower","Un_pen_est","Un_pen_upper",
-                             "Adj_pen_lower","Adj_pen_est","Adj_pen_upper")
-  
-  #Convert to data.frame and truncate the values to 3dp
-  sum_Table <- round(as.data.frame(est_out_T2),digits=3)
-  
-  #Assign factor levels to pop sampled and states modelled
-  sum_Table$Pop_sampled <- as.factor(sum_Table$Pop_sampled)
-    levels(sum_Table$Pop_sampled) <- levels(Cases$Population_sampled)[as.numeric(levels(sum_Table$Pop_sampled))]
-  sum_Table$states_modelled <- as.factor(sum_Table$states_modelled)
-    levels(sum_Table$states_modelled)  <- c("fsu","fs","fu","su")
-  
-  
-  #Summarise results in "estimate (LowerCI, UpperCI)" format
-  sums <- cbind(paste0(sum_Table$Pop_sampled," (",sum_Table$states_modelled,")"),
-                paste0(sum_Table$RX_est," (",sum_Table$RX_lower,", ",sum_Table$RX_upper,")"),
-                paste0(sum_Table$Un_pen_est," (",sum_Table$Un_pen_lower,", ",sum_Table$Un_pen_upper,")"),
-                paste0(sum_Table$Adj_pen_est," (",sum_Table$Adj_pen_lower,", ",sum_Table$Adj_pen_upper,")")
-  )
-  
-  #Assign colnames
-  colnames(sums) <- c("Analysis", "RXobs","unadjusted penetrance", "adjusted penetrance")
-  
-  #Store in Table 2 results object
-  T2 <- sums
-  
-  
-  
+  #Reformat with function and store in Table 2 results object
+  T2 <- reformatTab(est_out_T2)
 
   
   
-
 #Prepare Table S2 results
   est_out_TS2 <- est_out_c1_2[1:22,]
+  
+  #Reformat with function and store in Table 2 results object
+  TS2 <- reformatTab(est_out_TS2)
 
-  #Assign column names
-  colnames(est_out_TS2) <- c("Pop_sampled","states_modelled","RX_lower","RX_est","RX_upper",
-                            "Un_pen_lower","Un_pen_est","Un_pen_upper",
-                            "Adj_pen_lower","Adj_pen_est","Adj_pen_upper")
-  
-  #Convert to data.frame and truncate the values to 3dp
-  sum_Table <- round(as.data.frame(est_out_TS2),digits=3)
-  
-  #Assign factor levels to pop sampled and states modelled
-  sum_Table$Pop_sampled <- as.factor(sum_Table$Pop_sampled)
-    levels(sum_Table$Pop_sampled) <- levels(Cases$Population_sampled)[as.numeric(levels(sum_Table$Pop_sampled))]
-  sum_Table$states_modelled <- as.factor(sum_Table$states_modelled)
-    levels(sum_Table$states_modelled)  <- c("fsu","fs","fu","su")
-  
-  
-  #Summarise results in "estimate (LowerCI, UpperCI)" format
-  sums <- cbind(paste0(sum_Table$Pop_sampled," (",sum_Table$states_modelled,")"),
-                paste0(sum_Table$RX_est," (",sum_Table$RX_lower,", ",sum_Table$RX_upper,")"),
-                paste0(sum_Table$Un_pen_est," (",sum_Table$Un_pen_lower,", ",sum_Table$Un_pen_upper,")"),
-                paste0(sum_Table$Adj_pen_est," (",sum_Table$Adj_pen_lower,", ",sum_Table$Adj_pen_upper,")")
-  )
-  #Assign column names
-  colnames(sums) <- c("Analysis", "RXobs","unadjusted penetrance", "adjusted penetrance")
-  
-  #Store in Table S2 results object
-  TS2 <- sums
-  
   
 #Prepare Table S3 results
-  est_out_TS3 <- rbind(est_out_A5V,est_out_D91A,est_out_I114T)
+  est_out_TS3 <- data.frame(Pop_Samp = c("SOD1-A5V","SOD1-D91A","SOD1-I114T")
+                            ,rbind(est_out_A5V,est_out_D91A,est_out_I114T))
+    
+    
   
-  #Assign column names
-  colnames(est_out_TS3) <- c("Pop_sampled","states_modelled","RX_lower","RX_est","RX_upper",
-                             "Un_pen_lower","Un_pen_est","Un_pen_upper",
-                             "Adj_pen_lower","Adj_pen_est","Adj_pen_upper")
-  
-  #Convert to data.frame and truncate the values.
-    #Do not round - manual rounding, because of small D91A estimate
-  sum_Table <- as.data.frame(est_out_TS3)
-  
-  #Assign factor levels to pop sampled and states modelled
-  sum_Table$Pop_sampled <- as.factor(sum_Table$Pop_sampled)
-  levels(sum_Table$Pop_sampled) <- levels(Cases$Population_sampled)[as.numeric(levels(sum_Table$Pop_sampled))]
-  sum_Table$states_modelled <- as.factor(sum_Table$states_modelled)
-  levels(sum_Table$states_modelled)  <- c("fsu","fs","fu","su")
-  
-  
-  #Summarise results in "estimate (LowerCI, UpperCI)" format
-  sums <- cbind(paste0(sum_Table$Pop_sampled," (",sum_Table$states_modelled,")"),
-                paste0(sum_Table$RX_est," (",sum_Table$RX_lower,", ",sum_Table$RX_upper,")"),
-                paste0(sum_Table$Un_pen_est," (",sum_Table$Un_pen_lower,", ",sum_Table$Un_pen_upper,")"),
-                paste0(sum_Table$Adj_pen_est," (",sum_Table$Adj_pen_lower,", ",sum_Table$Adj_pen_upper,")")
-  )
-  #Assign column names
-  colnames(sums) <- c("Analysis", "RXobs","unadjusted penetrance", "adjusted penetrance")
   
   #Store in Table S3 output object
-  TS3 <- sums
+  TS3 <- reformatTab(est_out_TS3)
   
   
 
