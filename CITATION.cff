@@ -5,7 +5,7 @@ cff-version: 1.2.0
 title: ADPenetrance
 message: >-
   Please cite this dataset using the metadata from
-  'preferred-citation'.
+  doi: 10.1101/2021.03.16.21253691.
 type: software
 authors:
   - given-names: Thomas P
