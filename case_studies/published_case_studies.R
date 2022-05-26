@@ -26,8 +26,7 @@ se_p <- function(count,size){
 
 
 #Import dataset
-#Cases <- read.csv("https://raw.githubusercontent.com/ThomasPSpargo/adpenetrance/master/case_studies/case_data.csv",header=TRUE)
-Cases <- read.csv("/Users/tom/OneDrive - King's College London/PhD/PhD project/Sibship_penetrance/Git_files_April2022/case_studies/case_data.csv",header=TRUE)
+Cases <- read.csv("https://raw.githubusercontent.com/ThomasPSpargo/adpenetrance/master/case_studies/case_data.csv",header=TRUE)
 
 #Take data for case studies 1, 2, and some of 3
   #filter case study 1 to include only sample populations with >5 variant observations in familial and sporadic states
