@@ -32,12 +32,14 @@ adpenetrance <- function(N, MF=0, MS=0, MA=0, MU=0, PA=0, PF=0, MF_SE=0, MS_SE=0
                                            useG=useG,
                                            RX=RX, RX_SE=RX_SE, states=states)
   
+  states <- unadjusted.out$states #Identify states which have been used in analysis
+  
   ######
   ### Perform step 4 Adjustment
   ######
   
   #Generate error curve for sample, according to the specified N, the states combination returned by the unadjusted function, and whether upload_sibships or define_sibships have been defined
-  errorfit <- adpenetrance.errorfit(states=unadjusted.out$states, setmean=N,samp_size=90000,seed=24,define_sibstructure=define_sibstructure,useG = useG)
+  errorfit <- adpenetrance.errorfit(states=states, setmean=N,samp_size=90000,seed=24,define_sibstructure=define_sibstructure,useG = useG)
   
   #Prepare matrix to store adjusted f values
   Corr_f <- matrix(NA,ncol=4,nrow=1)
