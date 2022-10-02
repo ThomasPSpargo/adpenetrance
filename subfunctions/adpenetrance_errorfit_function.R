@@ -23,7 +23,7 @@
 
 
 #Define function
-adpenetrance.errorfit <- function(states,setmean,samp_size=90000,seed=24,define_sibstructure=NULL){
+adpenetrance.errorfit <- function(states,setmean,samp_size=90000,seed=24,define_sibstructure=NULL,useG=NA){
 
 #Define simulated sibships by Poison distribution if no data are given in 'define_sibstructure'
   #If data are given as a 2 column object, col1 represents siblevels and col2 represents proportions of population at each level  
@@ -75,10 +75,20 @@ adpenetrance.errorfit <- function(states,setmean,samp_size=90000,seed=24,define_
 #Loop across all values of penetrance
 for(m in 1:length(sim_f)){
   
-  ###Calculate the probability of each disease state expected each value of sim_N with penetrance f
-  Punasc = (1-sim_f[m])*(1-sim_f[m]/2)^sim_N                                                            #Probability unaffected 
-  Pspor  = sim_f[m]*(1-sim_f[m]/2)^sim_N+sim_N*(sim_f[m]/2)*(1-sim_f[m]/2)^(sim_N-1)*(1-sim_f[m])       #Probability sporadic/simplex
-  Pfam   = 1-((1-sim_f[m]/2)^sim_N+sim_N*(sim_f[m]/2)*((1-sim_f[m]/2)^(sim_N-1))*(1-sim_f[m]))          #Probability familial (= 1 - Punasc - Pspor)
+  if(!is.na(useG)){
+    g=useG
+    #Calculate proportions under the extended model including residual disease risk g
+    Punasc = (1-sim_f[m])*(1-sim_f[m]/2-g/2)^sim_N*(1-g) #Probability unaffected
+    Pspor  = sim_f[m]*(1-sim_f[m]/2-g/2)^sim_N*(1-g)+
+      (1-sim_f[m])*sim_N*(sim_f[m]/2+g/2)*(1-sim_f[m]/2-g/2)^(sim_N-1)*(1-g)+
+      (1-sim_f[m])*(1-sim_f[m]/2-g/2)^sim_N*g #Probability sporadic/simplex
+    Pfam   = 1-Punasc-Pspor #Probability familial (= 1 - Punasc - Pspor)
+  } else {
+    #Calculate proportions using the original disease model
+    Punasc = (1-sim_f[m])*(1-sim_f[m]/2)^sim_N #Probability unaffected
+    Pspor  = sim_f[m]*(1-sim_f[m]/2)^sim_N+sim_N*(sim_f[m]/2)*(1-sim_f[m]/2)^(sim_N-1)*(1-sim_f[m]) #Probability sporadic/simplex
+    Pfam   = 1-((1-sim_f[m]/2)^sim_N+sim_N*(sim_f[m]/2)*((1-sim_f[m]/2)^(sim_N-1))*(1-sim_f[m])) #Probability familial (= 1 - Punasc - Pspor)
+  }
   
   #Combine the calculated probabilities into a matrix, with row names defined per the value of sim_N
   Probabilities <- matrix(c(Pfam, Pspor, Punasc),
@@ -118,8 +128,9 @@ for(m in 1:length(sim_f)){
   }
     
   #Run adpenetrance.unadjusted
-  adpen_out <- adpenetrance.unadjusted(N=obsN,RX=obsRX,states=states)
-
+    suppressMessages(
+      adpen_out <- adpenetrance.unadjusted(N=obsN,RX=obsRX,states=states,useG=useG)
+    )
   #Store important information in the output object Preds
   Preds[m,] <- c(seed,sim_f[m], adpen_out$output[3],sim_f[m]-adpen_out$output[3])
   

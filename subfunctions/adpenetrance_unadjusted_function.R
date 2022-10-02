@@ -7,7 +7,8 @@
     #https://github.com/thomaspspargo/adpenetrance
 
 adpenetrance.unadjusted <- function(N, MF=0, MS=0, MA=0, MU=0, PA=0, PF=0, MF_SE=0, MS_SE=0, MU_SE=0, MA_SE=0, Zout=1.96,
-                         RX=0, RX_SE=0, states="none"){
+                                    useG=NA,
+                                    RX=0, RX_SE=0, states="none"){
   
   #--------------------------------------------#
   #   IF ELSE statements for input variables   #
@@ -218,11 +219,34 @@ adpenetrance.unadjusted <- function(N, MF=0, MS=0, MA=0, MU=0, PA=0, PF=0, MF_SE
   
   #Apply Al-Chalabi & Lewis (2011) equations to calculate P(unaffected), P(sporadic), P(familial) 
   #Do this at the defined specified sibship size for all values of f- store in matrix of length(f)
+  #Depending on whether a numeric is supplied to useG include model extension which accounts for disease risk not attributed to the variant
+  if(!is.na(useG)){
+    
+    g=useG
+    
+    #Calculate proportions under the extended model including residual disease risk g
+    Punasc = (1-f)*(1-f/2-g/2)^N*(1-g) #Probability unaffected
+    Pspor  = f*(1-f/2-g/2)^N*(1-g)+
+      (1-f)*N*(f/2+g/2)*(1-f/2-g/2)^(N-1)*(1-g)+
+      (1-f)*(1-f/2-g/2)^N*g #Probability sporadic/simplex
+    Pfam   = 1-Punasc-Pspor #Probability familial (= 1 - Punasc - Pspor)
+    message("Disease state proportions will be estimated using a disease model which allows a residual disease risk of ",signif(g,3)," among family members not harbouring the variant")
+    
+  } else {
+    #Calculate proportions using the original disease model
+    Punasc = (1-f)*(1-f/2)^N #Probability unaffected
+    Pspor  = f*(1-f/2)^N+N*(f/2)*(1-f/2)^(N-1)*(1-f) #Probability sporadic/simplex
+    Pfam   = 1-((1-f/2)^N+N*(f/2)*((1-f/2)^(N-1))*(1-f)) #Probability familial (= 1 - Punasc - Pspor)
+    
+    message("Disease state proportions will be estimated under the assumption that disease can only arise in people harbouring the variant")
+  }
+  
+  #Store state probabilities in a matrix
   dis_states <- matrix(c(
     f,
-    Punasc = (1-f)*(1-f/2)^N, #Probability unaffected
-    Pspor  = f*(1-f/2)^N+N*(f/2)*(1-f/2)^(N-1)*(1-f), #Probability sporadic/simplex
-    Pfam   = 1-((1-f/2)^N+N*(f/2)*((1-f/2)^(N-1))*(1-f)) #Probability familial (= 1 - Punasc - Pspor)
+    Punasc = Punasc,
+    Pspor  = Pspor,
+    Pfam   = Pfam
   ),nrow=length(f))
   colnames(dis_states) <- c("f","Punasc","Pspor","Pfam")
 
@@ -313,6 +337,6 @@ adpenetrance.unadjusted <- function(N, MF=0, MS=0, MA=0, MU=0, PA=0, PF=0, MF_SE
   #Assign row names
   rownames(Output) <- c(R1, R2, "Unadjusted Penetrance")
   
-  return(list(output=Output))
+  return(list(output=Output,states=states))
   
 }
