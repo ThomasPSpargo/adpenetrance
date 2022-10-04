@@ -75,20 +75,13 @@ adpenetrance.errorfit <- function(states,setmean,samp_size=90000,seed=24,define_
 #Loop across all values of penetrance
 for(m in 1:length(sim_f)){
   
-  if(!is.na(useG)){
-    g=useG
-    #Calculate proportions under the extended model including residual disease risk g
-    Punasc = (1-sim_f[m])*(1-sim_f[m]/2-g/2)^sim_N*(1-g) #Probability unaffected
-    Pspor  = sim_f[m]*(1-sim_f[m]/2-g/2)^sim_N*(1-g)+
-      (1-sim_f[m])*sim_N*(sim_f[m]/2+g/2)*(1-sim_f[m]/2-g/2)^(sim_N-1)*(1-g)+
-      (1-sim_f[m])*(1-sim_f[m]/2-g/2)^sim_N*g #Probability sporadic/simplex
-    Pfam   = 1-Punasc-Pspor #Probability familial (= 1 - Punasc - Pspor)
-  } else {
-    #Calculate proportions using the original disease model
-    Punasc = (1-sim_f[m])*(1-sim_f[m]/2)^sim_N #Probability unaffected
-    Pspor  = sim_f[m]*(1-sim_f[m]/2)^sim_N+sim_N*(sim_f[m]/2)*(1-sim_f[m]/2)^(sim_N-1)*(1-sim_f[m]) #Probability sporadic/simplex
-    Pfam   = 1-((1-sim_f[m]/2)^sim_N+sim_N*(sim_f[m]/2)*((1-sim_f[m]/2)^(sim_N-1))*(1-sim_f[m])) #Probability familial (= 1 - Punasc - Pspor)
-  }
+  g=useG
+  #Calculate proportions under the extended model including residual disease risk g
+  Punasc = (1-sim_f[m])*(1-sim_f[m]/2-g/2)^sim_N*(1-g) #Probability unaffected
+  Pspor  = sim_f[m]*(1-sim_f[m]/2-g/2)^sim_N*(1-g)+
+    (1-sim_f[m])*sim_N*(sim_f[m]/2+g/2)*(1-sim_f[m]/2-g/2)^(sim_N-1)*(1-g)+
+    (1-sim_f[m])*(1-sim_f[m]/2-g/2)^sim_N*g #Probability sporadic/simplex
+  Pfam   = 1-(Punasc+Pspor) #Probability familial (= 1 - Punasc - Pspor)
   
   #Combine the calculated probabilities into a matrix, with row names defined per the value of sim_N
   Probabilities <- matrix(c(Pfam, Pspor, Punasc),
