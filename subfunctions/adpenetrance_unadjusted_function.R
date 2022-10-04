@@ -6,9 +6,9 @@
     #The main adpenetrance function can be loaded from the "adpenetrance_function.R" script available within our github repository:
     #https://github.com/thomaspspargo/adpenetrance
 
-adpenetrance.unadjusted <- function(N, MF=0, MS=0, MA=0, MU=0, PA=0, PF=0, MF_SE=0, MS_SE=0, MU_SE=0, MA_SE=0, Zout=1.96,
-                                    useG=NA,
-                                    RX=0, RX_SE=0, states="none"){
+adpenetrance.unadjusted <- function(N, MF=NA, MS=NA, MA=NA, MU=NA, PA=NA, PF=NA, MF_SE=NA, MS_SE=NA, MU_SE=NA, MA_SE=NA, Zout=1.96,
+                                    useG=0,
+                                    RX=NA, RX_SE=NA, states="none"){
   
   #--------------------------------------------#
   #   IF ELSE statements for input variables   #
@@ -19,27 +19,41 @@ adpenetrance.unadjusted <- function(N, MF=0, MS=0, MA=0, MU=0, PA=0, PF=0, MF_SE
   
   #Generate value for states term within the function - necessary to pass through states to adpenetrance.errorfit
   if(states=="none"){ 
-    if(MF>0 && MS>0 && MU>0 && MA==0) {
+    if(!is.na(MF) && !is.na(MS) && !is.na(MU) && is.na(MA)) {
       states="fsu"
-    } else if(MF>0 && MS>0 && MU==0 && MA==0) {
+    } else if(!is.na(MF) && !is.na(MS) && is.na(MU) && is.na(MA)) {
       states="fs"
-    } else if(MF>0 && MS==0 && MU>0 && MA==0) {
+    } else if(!is.na(MF) && is.na(MS) && !is.na(MU) && is.na(MA)) {
       states="fu"
-    } else if(MF==0 && MS>0 && MU>0 && MA==0) {
+    } else if(is.na(MF) && !is.na(MS) && !is.na(MU) && is.na(MA)) {
       states="su"
-    } else if(MF==0 && MS==0 && MU>0 && MA>0) {
+    } else if(is.na(MF) && is.na(MS) && !is.na(MU) && !is.na(MA)) {
       states="au"
     } else {
       stop("No valid disease state combination has been defined. Variant frequency or RX estimates should be defined for any two or three of the familial, sporadic, and unaffected states or the affected and unaffected states. Please check that variant frequency estimates have been defined for a valid combination of states or that the 'RX' and 'states' arguments are properly defined.")
+    }
+    
+    #Logic check weighting factors
+    if(grepl("f|s",states)){
+      if(is.na(PF)) {
+        stop("PF has not been defined; This is required as a weighting factor in calculations involving variant frequencies MF or MS")
+      }
+    }
+    if(grepl("a|u",states)){
+      if(is.na(PA)) {
+        stop("PA has not been defined. This is required as a weighting factor in calculations involving variant frequencies MA or MU")
+      }
     }
   } else if(!any(c('fsu','fu','fs','au','su') %in% states)){ #Change states value to "incorrect" if nothing has been defined
       stop("No valid disease state combination has been defined. Variant frequency or RX estimates should be defined for any two or three of the familial, sporadic, and unaffected states or the affected and unaffected states. Please check which states have been indicated in the 'states' object")
   }
   
+  
   #The following statements evaluate how data are specified in the function to determine how to calculate the observed rate of state X.
   #All valid combinations are defined and unacceptable selections will be stored as NA and the output will not be valid
-  if(RX==0){ 
-    if(MF>0 && MS>0 && MU>0 && MA==0) { #If familial, sporadic, unaffected specified, and affected not specified
+  if(is.na(RX)){
+    
+    if(states=="fsu") { #If familial, sporadic, unaffected specified, and affected not specified
       X <- MF           #Familial state is state X
       WeiX <- PF*PA     #Weighting variable
       
@@ -49,11 +63,11 @@ adpenetrance.unadjusted <- function(N, MF=0, MS=0, MA=0, MU=0, PA=0, PF=0, MF_SE
       Z <- MU           #Unaffected is state Z (only used in this formulation - after this only X and Y need specification)
       WeiZ <- 1-PA      #Weighting variable
       
-      if(MF_SE>0 && MS_SE>0 && MU_SE>0) { #If error terms are given for all appropriate variables, define error terms
+      if(!is.na(MF_SE) && !is.na(MS_SE) && !is.na(MU_SE)) { #If error terms are given for all appropriate variables, define error terms
         XSE <- MF_SE
         YSE <- MS_SE
         ZSE <- MU_SE
-      } else if (MF_SE>0 || MS_SE>0 || MU_SE>0) { #If error terms are given for some but not all variables, do not define error terms and return warning message
+      } else if (!is.na(MF_SE) || !is.na(MS_SE) || !is.na(MU_SE)) { #If error terms are given for some but not all variables, do not define error terms and return warning message
         XSE <- NA
         YSE <- NA
         ZSE <- NA
@@ -65,17 +79,17 @@ adpenetrance.unadjusted <- function(N, MF=0, MS=0, MA=0, MU=0, PA=0, PF=0, MF_SE
         ZSE <- NA
       }
       
-    } else if(MF>0 && MS>0 && MU==0 && MA==0) { #If familial and sporadic specified, and unaffected and affected not specified
+    } else if(states=="fs") { #If familial and sporadic specified, and unaffected and affected not specified
       X <- MF           #Familial state is state X
       WeiX <- PF        
       
       Y <- MS           #Sporadic state is state Y
       WeiY <- 1-PF      
       
-      if(MF_SE>0 && MS_SE>0) { #If error terms are given for all appropriate variables, define error terms
+      if(!is.na(MF_SE) && !is.na(MS_SE)) { #If error terms are given for all appropriate variables, define error terms
         XSE <- MF_SE
         YSE <- MS_SE
-      } else if (MF_SE>0 || MS_SE>0) { #If error terms are given for some but not all variables, do not define error terms and return warning message
+      } else if (!is.na(MF_SE) || !is.na(MS_SE)) { #If error terms are given for some but not all variables, do not define error terms and return warning message
         XSE <- NA
         YSE <- NA
         
@@ -86,17 +100,17 @@ adpenetrance.unadjusted <- function(N, MF=0, MS=0, MA=0, MU=0, PA=0, PF=0, MF_SE
       }
       
       
-    } else if(MF>0 && MS==0 && MU>0 && MA==0) { #If familial and unaffected specified, and sporadic and affected not specified
+    } else if(states=="fu") { #If familial and unaffected specified, and sporadic and affected not specified
       X <- MF         #Familial state is X
       WeiX <- PF*PA 
       
       Y <- MU         #Unaffected state is Y
       WeiY <- 1-PA
       
-      if(MF_SE>0 && MU_SE>0) { #If error terms are given for all appropriate variables, define error terms
+      if(!is.na(MF_SE) && !is.na(MU_SE)) { #If error terms are given for all appropriate variables, define error terms
         XSE <- MF_SE
         YSE <- MU_SE
-      } else if (MF_SE>0 || MU_SE>0) { #If error terms are given for some but not all variables, do not define error terms and return warning message
+      } else if (!is.na(MF_SE) || !is.na(MU_SE)) { #If error terms are given for some but not all variables, do not define error terms and return warning message
         XSE <- NA
         YSE <- NA
         
@@ -106,17 +120,17 @@ adpenetrance.unadjusted <- function(N, MF=0, MS=0, MA=0, MU=0, PA=0, PF=0, MF_SE
         YSE <- NA
       }
       
-    } else if(MF==0 && MS>0 && MU>0 && MA==0) { #If sporadic and unaffected specified, and familial and affected not specified
+    } else if(states=="su") { #If sporadic and unaffected specified, and familial and affected not specified
       X <- MS         #Sporadic state is X
       WeiX <- (1-PF)*PA
       
       Y <- MU         #Unaffected state is Y
       WeiY <- 1-PA
       
-      if(MS_SE>0 && MU_SE) { #If error terms are given for all appropriate variables, define error terms
+      if(!is.na(MS_SE) && !is.na(MU_SE)) { #If error terms are given for all appropriate variables, define error terms
         XSE <- MS_SE
         YSE <- MU_SE
-      } else if (MS_SE>0 || MU_SE>0) { #If error terms are given for some but not all variables, do not define error terms and return warning message
+      } else if (!is.na(MS_SE) || !is.na(MU_SE)) { #If error terms are given for some but not all variables, do not define error terms and return warning message
         XSE <- NA
         YSE <- NA
         
@@ -126,17 +140,17 @@ adpenetrance.unadjusted <- function(N, MF=0, MS=0, MA=0, MU=0, PA=0, PF=0, MF_SE
         YSE <- NA
       }
       
-    } else if(MF==0 && MS==0 && MU>0 && MA>0) { #If unaffected and affected specified, familial and sporadic not specified
+    } else if(states=="au") { #If unaffected and affected specified, familial and sporadic not specified
       X <- MA         #Affected state is X
       WeiX <- PA
       
       Y <- MU         #Unaffected state is Y
       WeiY <- 1-PA
       
-      if(MA_SE>0 && MU_SE>0) { #If error terms are given for all appropriate variables, define error terms
+      if(!is.na(MA_SE) && !is.na(MU_SE)) { #If error terms are given for all appropriate variables, define error terms
         XSE <- MA_SE
         YSE <- MU_SE
-      } else if (MA_SE>0 || MU_SE>0) { #If error terms are given for some but not all variables, do not define error terms and return warning message
+      } else if (!is.na(MA_SE) || !is.na(MU_SE)) { #If error terms are given for some but not all variables, do not define error terms and return warning message
         XSE <- NA
         YSE <- NA
         
@@ -182,23 +196,26 @@ adpenetrance.unadjusted <- function(N, MF=0, MS=0, MA=0, MU=0, PA=0, PF=0, MF_SE
         ObsProbXSE <- sqrt(DifX^2*XSE^2 + DifY^2*YSE^2) #Partial derivatives*Std errors+...= SE in ObsProbX
         
       }
-    } else {ObsProbXSE <- as.numeric(NA)} #If error terms not given, skip this operation
+    } else {ObsProbXSE <- NA_real_} #If error terms not given, skip this operation
     
     
     
     
-  } else if(RX>0){ #IF RX is specified directly, the above is skipped and ObsProbX is defined directly by the user
-    if(MF==0 && MS==0 && MU==0 && MA==0){ #Do not do this if the variant frequencies have also been defined
-      ObsProbX = RX #Define ObsProbX directly from RX
-      
-      if(RX_SE>0){
-        ObsProbXSE = RX_SE #Define SE in ObsProbX from the error specified
-      } else {
-        ObsProbXSE <- as.numeric(NA) #Define as NA if error is unspecified
-      }
-    } else {
-      stop("Input data have been provided for at least 1 variant frequency as well as RX. Please specify either the 'RX' and the 'states' terms, or specify variant frequency estimates for each represented disease state")
+  } else if(!is.na(RX)){ #IF RX is specified directly, the above is skipped and ObsProbX is defined directly by the user
+    
+    #Pass error if any variant frequencies have also been defined
+    if(any(!is.na(MF),!is.na(MS),!is.na(MU),!is.na(MA))){
+      stop("Input data have been provided for at least 1 variant frequency as well as RX. Please specify either the 'RX' and the 'states' terms, or specify variant frequency estimates and required weighting factors for each represented disease state")
     }
+    
+    ObsProbX = RX #Define ObsProbX directly from RX
+    
+    if(!is.na(RX_SE)){
+      ObsProbXSE = RX_SE #Define SE in ObsProbX from the error specified
+    } else {
+      ObsProbXSE <- NA_real_ #Define as NA if error is unspecified
+    }
+    
   }
   
 
@@ -209,37 +226,26 @@ adpenetrance.unadjusted <- function(N, MF=0, MS=0, MA=0, MU=0, PA=0, PF=0, MF_SE
     upperCI = ObsProbX+(Zout*ObsProbXSE)   #Upper interval
     
   } else {
-    lowerCI=as.numeric(NA)
-    upperCI=as.numeric(NA)
+    lowerCI=NA_real_
+    upperCI=NA_real_
   }
   
   #Step 2:
   #Construct penetrance value sequence for lookup table. Values generated are between 0 and 1 at increments of 0.0001
   f = seq(0,1, by=0.0001)
   
-  #Apply Al-Chalabi & Lewis (2011) equations to calculate P(unaffected), P(sporadic), P(familial) 
+  #Apply extended Al-Chalabi & Lewis (2011) equations to calculate P(unaffected), P(sporadic), P(familial) 
   #Do this at the defined specified sibship size for all values of f- store in matrix of length(f)
-  #Depending on whether a numeric is supplied to useG include model extension which accounts for disease risk not attributed to the variant
-  if(!is.na(useG)){
-    
-    g=useG
-    
-    #Calculate proportions under the extended model including residual disease risk g
-    Punasc = (1-f)*(1-f/2-g/2)^N*(1-g) #Probability unaffected
-    Pspor  = f*(1-f/2-g/2)^N*(1-g)+
-      (1-f)*N*(f/2+g/2)*(1-f/2-g/2)^(N-1)*(1-g)+
-      (1-f)*(1-f/2-g/2)^N*g #Probability sporadic/simplex
-    Pfam   = 1-Punasc-Pspor #Probability familial (= 1 - Punasc - Pspor)
-    message("Disease state proportions will be estimated using a disease model which allows a residual disease risk of ",signif(g,3)," among family members not harbouring the variant")
-    
-  } else {
-    #Calculate proportions using the original disease model
-    Punasc = (1-f)*(1-f/2)^N #Probability unaffected
-    Pspor  = f*(1-f/2)^N+N*(f/2)*(1-f/2)^(N-1)*(1-f) #Probability sporadic/simplex
-    Pfam   = 1-((1-f/2)^N+N*(f/2)*((1-f/2)^(N-1))*(1-f)) #Probability familial (= 1 - Punasc - Pspor)
-    
-    message("Disease state proportions will be estimated under the assumption that disease can only arise in people harbouring the variant")
-  }
+  #when g=0, the default, these eqns are synonymous with the original Al-Chalabi & Lewis formulae
+  g=useG
+  
+  #Calculate proportions under the extended model including residual disease risk g. If g=0, synonymous with original equations
+  Punasc = (1-f)*(1-f/2-g/2)^N*(1-g) #Probability unaffected
+  Pspor  = f*(1-f/2-g/2)^N*(1-g)+
+    (1-f)*N*(f/2+g/2)*(1-f/2-g/2)^(N-1)*(1-g)+
+    (1-f)*(1-f/2-g/2)^N*g #Probability sporadic/simplex
+  Pfam   = 1-(Punasc+Pspor) #Probability familial (= 1 - Punasc - Pspor)
+  message("Disease state proportions are calculated expecting residual disease risk (g) of ",signif(g,3)," among family members not harbouring the variant")
   
   #Store state probabilities in a matrix
   dis_states <- matrix(c(
@@ -270,7 +276,7 @@ adpenetrance.unadjusted <- function(N, MF=0, MS=0, MA=0, MU=0, PA=0, PF=0, MF_SE
     LookupX = (dis_states[,"Pfam"]+dis_states[,"Pspor"])/(dis_states[,"Pfam"]+dis_states[,"Pspor"]+dis_states[,"Punasc"]) #(F+S)/(F+S+U) = (F+S)/1 = A/1
     LabelX = "affected"
   } else {
-    LookupX = as.numeric(NA)
+    LookupX = NA_real_
     LabelX <- NA
   }
   
@@ -337,6 +343,6 @@ adpenetrance.unadjusted <- function(N, MF=0, MS=0, MA=0, MU=0, PA=0, PF=0, MF_SE
   #Assign row names
   rownames(Output) <- c(R1, R2, "Unadjusted Penetrance")
   
-  return(list(output=Output,states=states))
+  return(list(output=Output,states=states,ResidualRiskG=useG))
   
 }

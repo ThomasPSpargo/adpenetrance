@@ -21,9 +21,9 @@
 
 
 #Second, specify main adpenetrance function
-adpenetrance <- function(N, MF=0, MS=0, MA=0, MU=0, PA=0, PF=0, MF_SE=0, MS_SE=0, MU_SE=0, MA_SE=0, Zout=1.96,
-                         useG=NA,
-                         RX=0, RX_SE=0, states="none",define_sibstructure=NULL){
+adpenetrance <- function(N, MF=NA, MS=NA, MA=NA, MU=NA, PA=NA, PF=NA, MF_SE=NA, MS_SE=NA, MU_SE=NA, MA_SE=NA, Zout=1.96,
+                         useG=0,
+                         RX=NA, RX_SE=NA, states="none",define_sibstructure=NULL){
   
   ######
   ### Run ADPenetrance unadjusted function for steps 1-3, passing across relevant inputs
@@ -80,6 +80,6 @@ adpenetrance <- function(N, MF=0, MS=0, MA=0, MU=0, PA=0, PF=0, MF_SE=0, MS_SE=0
   }
   rownames(output)[4] <- "Adjusted Penetrance" #add new rowname for adjusted penetrance
   
-  return(list(output=output,states=states,errorfit=summary(errorfit$fitbest)))
+  return(list(output=output,states=states,ResidualRiskG=useG,errorfit=summary(errorfit$fitbest)))
   
 }

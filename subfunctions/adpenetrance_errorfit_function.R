@@ -23,7 +23,7 @@
 
 
 #Define function
-adpenetrance.errorfit <- function(states,setmean,samp_size=90000,seed=24,define_sibstructure=NULL,useG=NA){
+adpenetrance.errorfit <- function(states,setmean,samp_size=90000,seed=24,define_sibstructure=NULL,useG=0){
 
 #Define simulated sibships by Poison distribution if no data are given in 'define_sibstructure'
   #If data are given as a 2 column object, col1 represents siblevels and col2 represents proportions of population at each level  
