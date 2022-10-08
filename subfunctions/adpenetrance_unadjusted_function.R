@@ -294,16 +294,108 @@ adpenetrance.unadjusted <- function(N, MF=NA, MS=NA, MA=NA, MU=NA, PA=NA, PF=NA,
   
   #Matching ObsProbX to closest LookupX - store the locus retrieved in 'loci' object defined above
   if(!is.na(ObsProbX)) {
-    loci[,"Estimate"] <- which(abs(LookupTable[,1]-as.vector(ObsProbX))==min(abs(LookupTable[,1]-as.vector(ObsProbX)),na.rm=T)) #Locus for the estimate
-  
-    }
+    tryCatch(
+      loci[,"Estimate"] <- which(abs(LookupTable[,1]-as.vector(ObsProbX))==min(abs(LookupTable[,1]-as.vector(ObsProbX)),na.rm=T)) #Locus for the estimate
+      ,error = function(x){warning(x)
+        
+        #Extract matched indices and sanitise for error reporting
+        match<- which(abs(LookupTable[,1]-as.vector(ObsProbX))==min(abs(LookupTable[,1]-as.vector(ObsProbX)),na.rm=T))
+        matchtab <- LookupTable[match,]
+        colnames(matchtab) <- c("Expected RX_i","corresponding penetrance")
+        
+        cat("------------------------------\n")
+        cat("ADPenetrance error catch when indexing lookup table to identify expected disease state rate corresponding to RX.\n")
+        cat("Multiple rows in the lookup table may have been matched.\nThis could reflect equal distance between the Observed disease state rate and two positions in the lookup table\n current parameter details are as follows:\n")
+        
+        cat("Observed disease state rate (RX):\n")
+        print(ObsProbX)
+        cat("Estimated average sibship size (N):\n")
+        print(N)
+        cat("Estimated residual disease risk (g):\n")
+        print(useG)
+        cat("States modelled:\n")
+        print(states)
+        
+        cat("Matched row indices in lookup table (only 1 match is expected):\n")
+        print(match)
+        cat("Corresponding rows in lookup table:\n")
+        print(matchtab)
+        
+        cat("Penetrance estimation will proceed using the first index match\n")
+        loci[,"Estimate"] <<- match[1] #Locus for the estimate
+        cat("-----------------------------\n")
+      }) #End trycatch
+  }
   
   #If error propagation has been included:
     #Repeat process at disease state rates observed at confidence interval bounds
   if(!is.na(ObsProbXSE)) {
-    loci[,"Lower CI"] <- which(abs(LookupTable[,1]-as.vector(lowerCI))==min(abs(LookupTable[,1]-as.vector(lowerCI)),na.rm=T)) #Locus for the lower bound
-     
-    loci[,"Upper CI"] <- which(abs(LookupTable[,1]-as.vector(upperCI))==min(abs(LookupTable[,1]-as.vector(upperCI)),na.rm=T)) #Locus for the upper bound
+    
+    #Perform indexing; use trycatch to give more informative error handling
+    tryCatch(
+      loci[,"Lower CI"] <- which(abs(LookupTable[,1]-as.vector(lowerCI))==min(abs(LookupTable[,1]-as.vector(lowerCI)),na.rm=T)) #Locus for the lower bound
+      ,error = function(x){warning(x)
+        
+        #Extract matched indices and sanitise for error reporting
+        match<- which(abs(LookupTable[,1]-as.vector(lowerCI))==min(abs(LookupTable[,1]-as.vector(lowerCI)),na.rm=T))
+        matchtab <- LookupTable[match,]
+        colnames(matchtab) <- c("Expected RX_i","corresponding penetrance")
+        
+        cat("------------------------------\n")
+        cat("ADPenetrance error catch when indexing lookup table to identify expected disease state rate corresponding to lower confidence interval of RX.\n")
+        cat("Multiple rows in the lookup table may have been matched.\nThis could reflect equal distance between the observed disease state rate and two positions in the lookup table\n current parameter details are as follows:\n")
+        
+        cat("Observed disease state rate (RX) lower CI value:\n")
+        print(lowerCI)
+        cat("Estimated average sibship size (N):\n")
+        print(N)
+        cat("Estimated residual disease risk (g):\n")
+        print(useG)
+        cat("States modelled:\n")
+        print(states)
+        
+        cat("Matched row indices in lookup table (only 1 match is expected):\n")
+        print(match)
+        cat("Corresponding rows in lookup table:\n")
+        print(matchtab)
+        
+        cat("Penetrance estimation will proceed using the first index match\n")
+        loci[,"Lower CI"] <<- match[1] #Locus for the estimate
+        cat("-----------------------------\n")
+      }) #End trycatch
+    
+    #Perform indexing; use trycatch to give more informative error handling
+    tryCatch(
+      loci[,"Upper CI"] <- which(abs(LookupTable[,1]-as.vector(upperCI))==min(abs(LookupTable[,1]-as.vector(upperCI)),na.rm=T)) #Locus for the upper bound
+      ,error = function(x){warning(x)
+        
+        #Extract matched indices and sanitise for error reporting
+        match<- which(abs(LookupTable[,1]-as.vector(upperCI))==min(abs(LookupTable[,1]-as.vector(upperCI)),na.rm=T))
+        matchtab <- LookupTable[match,]
+        colnames(matchtab) <- c("Expected RX_i","corresponding penetrance")
+        
+        cat("------------------------------\n")
+        cat("ADPenetrance error catch when indexing lookup table to identify expected disease state rate corresponding to upper confidence interval of RX.\n")
+        cat("Multiple rows in the lookup table may have been matched.\nThis could reflect equal distance between the observed disease state rate and two positions in the lookup table.\nCurrent parameter details are as follows:\n")
+        
+        cat("Observed disease state rate (RX) upper CI value:\n")
+        print(upperCI)
+        cat("Estimated average sibship size (N):\n")
+        print(N)
+        cat("Estimated residual disease risk (g):\n")
+        print(useG)
+        cat("States modelled:\n")
+        print(states)
+        
+        cat("Matched row indices in lookup table (only 1 match is expected):\n")
+        print(match)
+        cat("Corresponding rows in lookup table:\n")
+        print(matchtab)
+        
+        cat("Penetrance estimation will proceed using the first index match\n")
+        loci[,"Upper CI"] <<- match[1]
+        cat("-----------------------------\n")
+      }) #End trycatch 
       
   }
   
