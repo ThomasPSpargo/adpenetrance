@@ -10,14 +10,14 @@
 #--------------------------------------------#
 
 #First, if not already loaded in the environment, download the adpenetrance.unadjusted and adpenetrance.errorfit subfunctions from GitHub
-  if(!"adpenetrance.errorfit" %in% ls()){
-    source("https://raw.githubusercontent.com/ThomasPSpargo/adpenetrance/master/subfunctions/adpenetrance_errorfit_function.R")
-  }
-  
-  #If the function is not defined in the environment, download from github
-  if(!"adpenetrance.unadjusted" %in% ls()){
-    source("https://raw.githubusercontent.com/ThomasPSpargo/adpenetrance/master/subfunctions/adpenetrance_unadjusted_function.R")
-  }
+if(!"adpenetrance.errorfit" %in% ls()){
+  source("https://raw.githubusercontent.com/ThomasPSpargo/adpenetrance/master/subfunctions/adpenetrance_errorfit_function.R")
+}
+
+#If the function is not defined in the environment, download from github
+if(!"adpenetrance.unadjusted" %in% ls()){
+  source("https://raw.githubusercontent.com/ThomasPSpargo/adpenetrance/master/subfunctions/adpenetrance_unadjusted_function.R")
+}
 
 
 #Second, specify main adpenetrance function
@@ -80,6 +80,6 @@ adpenetrance <- function(N, MF=NA, MS=NA, MA=NA, MU=NA, PA=NA, PF=NA, MF_SE=NA, 
   }
   rownames(output)[4] <- "Adjusted Penetrance" #add new rowname for adjusted penetrance
   
-  return(list(output=output,states=states,ResidualRiskG=useG,errorfit=summary(errorfit$fitbest)))
+  return(list(output=output,states=states,ResidualRiskG=useG,errorfit=errorfit$fitbest))
   
 }
