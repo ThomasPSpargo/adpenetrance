@@ -294,6 +294,7 @@ adpenetrance.unadjusted <- function(N, MF=NA, MS=NA, MA=NA, MU=NA, PA=NA, PF=NA,
   
   #Matching ObsProbX to closest LookupX - store the locus retrieved in 'loci' object defined above
   if(!is.na(ObsProbX)) {
+    #Perform indexing; use trycatch to give more informative error handling
     tryCatch(
       loci[,"Estimate"] <- which(abs(LookupTable[,1]-as.vector(ObsProbX))==min(abs(LookupTable[,1]-as.vector(ObsProbX)),na.rm=T)) #Locus for the estimate
       ,error = function(x){warning(x)
@@ -305,7 +306,7 @@ adpenetrance.unadjusted <- function(N, MF=NA, MS=NA, MA=NA, MU=NA, PA=NA, PF=NA,
         
         cat("------------------------------\n")
         cat("ADPenetrance error catch when indexing lookup table to identify expected disease state rate corresponding to RX.\n")
-        cat("Multiple rows in the lookup table may have been matched.\nThis could reflect equal distance between the Observed disease state rate and two positions in the lookup table\n current parameter details are as follows:\n")
+        cat("Multiple rows in the lookup table may have been matched.\nThis could reflect equal distance between the observed disease state rate and two positions in the lookup table\n current parameter details are as follows:\n")
         
         cat("Observed disease state rate (RX):\n")
         print(ObsProbX)
@@ -321,7 +322,7 @@ adpenetrance.unadjusted <- function(N, MF=NA, MS=NA, MA=NA, MU=NA, PA=NA, PF=NA,
         cat("Corresponding rows in lookup table:\n")
         print(matchtab)
         
-        cat("Penetrance estimation will proceed using the first index match\n")
+        cat("Penetrance estimation will proceed using the first index match.\n")
         loci[,"Estimate"] <<- match[1] #Locus for the estimate
         cat("-----------------------------\n")
       }) #End trycatch
@@ -359,7 +360,7 @@ adpenetrance.unadjusted <- function(N, MF=NA, MS=NA, MA=NA, MU=NA, PA=NA, PF=NA,
         cat("Corresponding rows in lookup table:\n")
         print(matchtab)
         
-        cat("Penetrance estimation will proceed using the first index match\n")
+        cat("Penetrance estimation will proceed using the first index match.\n")
         loci[,"Lower CI"] <<- match[1] #Locus for the estimate
         cat("-----------------------------\n")
       }) #End trycatch
@@ -392,7 +393,7 @@ adpenetrance.unadjusted <- function(N, MF=NA, MS=NA, MA=NA, MU=NA, PA=NA, PF=NA,
         cat("Corresponding rows in lookup table:\n")
         print(matchtab)
         
-        cat("Penetrance estimation will proceed using the first index match\n")
+        cat("Penetrance estimation will proceed using the first index match.\n")
         loci[,"Upper CI"] <<- match[1]
         cat("-----------------------------\n")
       }) #End trycatch 

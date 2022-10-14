@@ -29,22 +29,21 @@ adpenetrance.errorfit <- function(states,setmean,samp_size=90000,seed=24,define_
   #If data are given as a 2 column object, col1 represents siblevels and col2 represents proportions of population at each level  
   #If data do not have 2 columns, expect a vector of sibship size integers from which the proportions of each sib-size level can be determined
   if(!is.null(define_sibstructure)){
-    if(ncol(as.matrix(define_sibstructure))==2){
+    
+    #Extract sibstructure as proportions
+    if (is.vector(define_sibstructure,mode="integer")){   
+      define_sibstructure <- as.matrix(prop.table(table(define_sibstructure)))
+      define_sibstructure <- cbind(as.numeric(rownames(define_sibstructure)), define_sibstructure[,1])
+    }
+    
+    #Generate custom population
+    if(ncol(define_sibstructure)==2){
       #define_sibstructure[,1] - sibship levels in population
       #define_sibstructure[,2] - sibship weightings (e.g. proportions of each sib size number of each sibships)
       
       set.seed(seed)
       sibships <- sample(as.numeric(define_sibstructure[,1]), 90000,replace=TRUE,prob=as.numeric(define_sibstructure[,2]))
-    } else if (is.vector(define_sibstructure,mode="integer")){
-      #Extract sibship proportions specified in data
-      size_probs<- prop.table(table(define_sibstructure))
-      #Define sibship levels by:  as.numeric(names(size_probs))
-      #Define probabilities by:   unname(size_probs)
-      
-      #Generate simulation sample based on data 
-      set.seed(seed)
-      sibships <- sample(as.numeric(names(size_probs)), 90000,replace=TRUE,prob=unname(size_probs))
-    } else{
+    } else {
       stop("Data passed to the define_sibstructure argument does not correspond with an expected format")
     }
   } else {
