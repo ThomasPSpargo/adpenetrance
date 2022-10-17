@@ -9,14 +9,14 @@
 #Purpose:
 # This can be used to give an indication about whether penetrance estimates might be affected substantially by age of sampling,
 # when the difference in variability between groups is large
-# the main inputs are provided to: dataset OR groups and age onset should be provided
+# the main inputs are provided to the dataset OR groups and age onset arguments. One of these combinations should be given
 
 ## INPUT:
-#dataset      = a data.frame that must contain columns columns named "groups" and "ageonset" (additional columns will be ignodred).See groups and ageonset arguments for further details
+#dataset      = a data.frame that must contain columns columns named "groups" and "ageonset" (additional columns will be ignored).See groups and ageonset arguments for further details
 #groups       = factor or character vector flagging to which group the corresponding 'ageonset' value corresponds. If this has factor class, factor order will be retained.
 #ageonset     = numeric vector indicating the age at which disease onsets, becoming penetrant, for each person.
-#center_on    = should be either "mean", "median", or a numeric between 0 and 1. These determine how age of onset values will be centered for each group. Numeric values are parsed by the quantile() function
-#plotType     = character vector of either "density" or "cumulative density" and indicates whether to plot the density curve or cumulative density function for each group.
+#centre_on    = should be either "mean", "median", or a numeric between 0 and 1. These determine how age of onset values will be centred for each group. Numeric values are parsed by the quantile() function
+#plotType     = character vector of either "density" or "cumulative". indicates whether to plot the density curve or cumulative density function for each group.
 #...          = arguments passed to plot(); cannot currently accept x,y,col,ylim,xlim,xlab,type,xlab,ylab,sub since these are defined explicitly within the main function
 
 ## OUTPUT:
@@ -50,16 +50,16 @@ checkOnsetVariability <- function(dataset=NULL,groups=NULL,ageonset=NULL,centre_
   #Function to prepare for density plotting, and calculate time interval between onset range (e.g. IQR)
   getDist <- function(data){
     if(centre_on=="mean"){
-      #Identify mean as center point
+      #Identify mean as centre point
       centrepoint <- mean(data$ageonset,na.rm = TRUE)
     } else if(centre_on=="median"){
-      #Identify median as center point
+      #Identify median as centre point
       centrepoint <- median(data$ageonset,na.rm = TRUE)
     } else if(is.numeric(centre_on)){
-      #Center on the numeric value indicated by quantile
+      #centre on the numeric value indicated by quantile
       centrepoint <- quantile(data$ageonset,centre_on,na.rm=TRUE)
     }
-    #Center age of onset about about the center point
+    #centre age of onset about about the centre point
     data$centred <- data$ageonset-centrepoint
     
     #Extract cumulative age of onset
@@ -75,7 +75,7 @@ checkOnsetVariability <- function(dataset=NULL,groups=NULL,ageonset=NULL,centre_
     
     agediff <- endage-startage
     if(plotType=="density"){
-      #Calculate density function around center point
+      #Calculate density function around centre point
       dense<-density(data$centred)
     } else if (plotType=="cumulative"){
       
@@ -99,10 +99,10 @@ checkOnsetVariability <- function(dataset=NULL,groups=NULL,ageonset=NULL,centre_
   
   t_diff_message <- paste0("[",round(t_diff,3), " relative difference in onset variability]")
   
-  message(paste0("The time taken for disease occurences across the interquartile range (IQR) to onset in group ",xlevels[2]," is ", round(t_diff,3), " times shorter than in group ",xlevels[1],".\n"))
+  message(paste0("The time between the first and third quartiles of onset in group ",xlevels[2]," is ", round(t_diff,3), " times shorter that in group ",xlevels[1],".\n"))
   
   if(is.numeric(centre_on)){
-    #Rename center on for labelling
+    #Rename centre on for labelling
     centre_on <- paste0(centre_on*100,"% quantile")
   }
   
@@ -121,7 +121,7 @@ checkOnsetVariability <- function(dataset=NULL,groups=NULL,ageonset=NULL,centre_
        col="red",
        ylim=c(0,maxy),
        xlim=rangex,
-       xlab=paste0("Age of onset, centered by group ", centre_on),
+       xlab=paste0("Age of onset, centred by group ", centre_on),
        sub=t_diff_message
        )
   #Overlay 2nd density curve
@@ -147,7 +147,7 @@ checkOnsetVariability <- function(dataset=NULL,groups=NULL,ageonset=NULL,centre_
          ylim=c(0,1),
          xlim=rangex,
          type="l",
-         xlab=paste0("Age of onset, centered by group ", centre_on),
+         xlab=paste0("Age of onset, centred by group ", centre_on),
          ylab="Cumulative density",
          sub=t_diff_message
     )
