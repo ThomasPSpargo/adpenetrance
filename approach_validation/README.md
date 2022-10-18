@@ -1,5 +1,5 @@
 ## ADPenetrance approach validation steps
-___Updated 17/10/2022___
+___Updated 18/10/2022___
 
 _The repository is maintained by Thomas Spargo (<thomas.spargo@kcl.ac.uk>) - please reach out with any questions._
 
@@ -24,13 +24,16 @@ ___
 
 ##### simulation_studies/
 
-* The following scripts each test the accuracy of adjusted penetrance estimates produced by `adpenetrance` in datasets of  simulated families harbouring hypothetical variants for which the true penetrance is known.
+The following scripts each test the accuracy of adjusted penetrance estimates produced by `adpenetrance` in datasets of  simulated families harbouring hypothetical variants for which the true penetrance is known.
 
-* Two distinct populations of simulated families are generated in these simulations. The first is based on the sibship distribution observed in a UK population 1974 birth cohort ([2](https://www.ons.gov.uk/peoplepopulationandcommunity/birthsdeathsandmarriages/conceptionandfertilityrates/datasets/childbearingforwomenbornindifferentyearsreferencetable)). The second is based on the distribtion the 'Next Steps' cohort study of English families ([3](https://doi.org/10.1017/ehs.2020.54)).
+Two distinct populations of simulated families are generated in these simulations. The first is based on the sibship distribution observed in a UK population 1974 birth cohort ([2](https://www.ons.gov.uk/peoplepopulationandcommunity/birthsdeathsandmarriages/conceptionandfertilityrates/datasets/childbearingforwomenbornindifferentyearsreferencetable)). The second is based on the distribtion the 'Next Steps' cohort study of English families ([3](https://doi.org/10.1017/ehs.2020.54)).
 
-* The accuracy of penetrance estimates made for hypothetical variants occuring in these two populations is compared according to the states modelled (see `states` argument [details]( https://github.com/ThomasPSpargo/adpenetrance/wiki/ADPenetrance)) and whether the user supplies `adpenetrance` with information about the distribution of sibships in their dataset (see `define_sibstructure` argument [details]( https://github.com/ThomasPSpargo/adpenetrance/wiki/ADPenetrance)).
+The accuracy of penetrance estimates made for hypothetical variants occuring in these two populations is compared according to the states modelled (see `states` argument [details]( https://github.com/ThomasPSpargo/adpenetrance/wiki/ADPenetrance)) and whether the user supplies `adpenetrance` with information about the distribution of sibships in their dataset (see `define_sibstructure` argument [details]( https://github.com/ThomasPSpargo/adpenetrance/wiki/ADPenetrance)).
 
-* Full documentation for the adpenetrance function is provided [here]( https://github.com/ThomasPSpargo/adpenetrance/wiki/ADPenetrance).
+Full documentation for the adpenetrance function is provided [here]( https://github.com/ThomasPSpargo/adpenetrance/wiki/ADPenetrance).
+
+The set of `TimeSimulation*.R` scripts, draw upon the `simADPenetrance` [function]( https://github.com/ThomasPSpargo/adpenetrance/wiki/simADPenetrance) to simulate the impact of age of sampling upon accuracy of lifetime penetrance estimation across several scenarios, described below.
+
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; __simulation_1_correct_parameter_specification.R__
 
@@ -47,6 +50,31 @@ ___
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; __Simulation_4_accountForG.R__
 
 * This script calls `adpenetrance_function.R` to test the adjusted penetrance accuracy according to the degree of residual disease risk *g* among people not harbouring the variant and whether *g* is taken into account when running the approach or is *g* assumed to be 0.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; __TimeSimulation1_onesample.R__
+
+* This script simulates a scenario where the only families harbouring a variant of penetrance 'f' have been sampled.
+
+* Disease state rates are expected to vary over time, affecting accuracy in estimating lifetime penetrance according to age of sampling.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; __TimeSimulation2_equalonset.R__
+
+* This script simulates a scenario where families harbouring variant *M* which has penetrance f are sampled alongside other families where the variant doesnt occur, instead harbouring one of several other variants with varying penetrance.
+
+* Equal variability of disease onset is observed between people with variant *M* and people with other variants. Therefore change in family disease state rates are expected to be more stable across ages of sampling. This permits reasonable lifetime penetrance estimates at younger ages.
+
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; __TimeSimulation3_1pt3onset.R__
+
+* This script simulates a scenario where families harbouring variant *M* which has penetrance f are sampled alongside other families where the variant doesnt occur, instead harbouring one of several other variants with varying penetrance.
+
+* Unlike `TimeSimulation2_equalonset.R`, equal onset variability is not observed in this simulation, with a  shorter 'window' for disease onset among people harbouring variant *M*, scaled to be 1.3 times shorter than the onset window of people without *M*. Lifetime penetrance estimation is expected to more influenced by sampling age than in `TimeSimulation2_equalonset.R`, but still tolerable by this degree of unequal onset variability.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; __TimeSimulation4_0pt77onset.R__
+
+* This script simulates a scenario where families harbouring variant *M* which has penetrance f are sampled alongside other families where the variant doesnt occur, instead harbouring one of several other variants with varying penetrance.
+
+* Unlike `TimeSimulation2_equalonset.R`, equal onset variability is not observed in this simulation, with a  longer 'window' for disease onset among people harbouring variant *M*, scaled to be 0.77 shorter (i.e. $\ 1/0.77≈1.3 $ times longer) than the onset window for people without *M*. Lifetime penetrance estimation is expected to more influenced by sampling age than in `TimeSimulation2_equalonset.R`, but still tolerable by this degree of unequal onset variability.
 
 ___
 

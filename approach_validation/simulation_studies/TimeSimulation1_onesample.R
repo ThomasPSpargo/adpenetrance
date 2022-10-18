@@ -13,10 +13,11 @@ library(plyr)
 library(ggplot2)
 library(reshape2)
 source("https://raw.githubusercontent.com/ThomasPSpargo/adpenetrance/master/adpenetrance_function.R") #Main function and subfunctions
+source("https://raw.githubusercontent.com/ThomasPSpargo/adpenetrance/master/simADPenetrance.R") #main simulation function
 #Load subfunctions functions for simulating families, via lapply
 simFunctions_root<- ("https://raw.githubusercontent.com/ThomasPSpargo/adpenetrance/master/subfunctions/")
 simFunctions <- c("affAtAge.R","bindRows.R","genFamily.R","varChars.R")
-invisible(lapply(paste0(root,simFunctions),source))
+invisible(lapply(paste0(simFunctions_root,simFunctions),source))
 rm(simFunctions_root,simFunctions) #Clean temp objects from environment
 
 start <- Sys.time()

@@ -30,10 +30,12 @@ __simADPenetrance.R__
 * This function is dependent upon the main `adpenetrance` function and subfunctions, and subfunctions within the `subfunctions/` directory - each of these dependencies are automatically retrieved from GitHub when running `simADPenetrance.R`.
 * It is also dependent upon the R packages `ggplot2`, `plyr`, `reshape2`, which must be installed and loaded by the user.
 
-#### subfunctions/
-* This directory contains several functions which are utilised internally when running `adpenetrance` or `simADPenetrance`.
-* Details regarding each function are providied within, and in the repository [wiki](https://github.com/ThomasPSpargo/adpenetrance/wiki).
-  
+#### approach_validation/
+
+This directory contains scripts utilised as part of validation for this approach to penetrance calculation. 
+
+Please refer to the README documentation within the `approach_validation/` directory which describes the contents and validation steps taken.
+
 #### case_studies/
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; __case_data.csv__
@@ -43,10 +45,10 @@ __simADPenetrance.R__
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; __published_case_studies.R__
 *  This script calls the `adpenetrance` and `getResidualRisk` functions and `case_data.csv` to estimate penetrance for case studies represented within `case_data.csv`.
 
+#### subfunctions/
+This directory contains several functions which are utilised internally when running `adpenetrance` or `simADPenetrance`.
 
-#### approach_validation/
-
-* Please refer to the README documentation within the `approach_validation/` directory which describes the contents and steps taken for approach validation
+Details regarding each function are providied within, and in the repository [wiki](https://github.com/ThomasPSpargo/adpenetrance/wiki).
 
 ___  
 
