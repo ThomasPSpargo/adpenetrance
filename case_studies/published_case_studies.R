@@ -55,7 +55,7 @@ Cases_wcount <- rbind(
 for(k in 1:length(Cases_wcount$Population_sampled)){
   
   #If the variant frequency is attained by 0/0 division, NaN produced.
-  #This represents having no sampled familial state, given that in this state the variant frequency of 0
+  #This represents having no sampled familial or unaffected state, indicative of a variant frequency of ~0
   #Accordingly, substitute NaN with 0
   MF_get <- Cases_wcount[k,"Var_fam"]/Cases_wcount[k,"N_familial"]
   if(is.nan(MF_get)){MF_get <- 0}
@@ -63,9 +63,13 @@ for(k in 1:length(Cases_wcount$Population_sampled)){
   MS_get <- Cases_wcount[k,"Var_spor"]/Cases_wcount[k,"N_sporadic"]
   if(is.nan(MS_get)){MS_get <- 0}
   
+  MU_get <- Cases_wcount[k,"Var_unaf"]/Cases_wcount[k,"N_unaffected"]
+  if(is.nan(MU_get)){MU_get <- 0}
+  
   #Compute the remaining disease for a population member who does not harbour the variant
   residualRiskG<- getResidualRisk(MF=MF_get,
                                   MS=MS_get,
+                                  MU=MU_get,
                                   PF=Cases_wcount[k,"PF"],
                                   PA=1/Cases_wcount[k,"PA"])
   
@@ -250,6 +254,7 @@ for(k in 1:length(Cases_wfreq$Population_sampled)){ #Loop across each row of inp
   #Compute the remaining disease for a population member who does not harbour the variant
   residualRiskG<- getResidualRisk(MF=Cases_wfreq[k,"Freq_fam"],
                                   MS=Cases_wfreq[k,"Freq_spor"],
+                                  MU=0, #Reflecting rare variants, MU is ~0 in these examples
                                   PF=Cases_wfreq[k,"PF"],
                                   PA=1/Cases_wfreq[k,"PA"])
   
@@ -306,13 +311,13 @@ est_out_wfreq <- data.frame(study = Cases_wfreq$Case_study,Pop_Samp = Cases_wfre
                   paste0(x$ExtResidRiskG),
                   paste0(x$RX_est," (",x$RX_lower,", ",x$RX_upper,")"),
                   paste0(x$BaseUn_pen_est," (",x$BaseUn_pen_lower,", ",x$BaseUn_pen_upper,")"),
-                  paste0(x$BaseAdj_pen_est," (",x$BaseAdj_pen_lower,", ",x$BaseAdj_pen_upper,")"),
                   paste0(x$ExtUn_pen_est," (",x$ExtUn_pen_lower,", ",x$ExtUn_pen_upper,")"),
+                  paste0(x$BaseAdj_pen_est," (",x$BaseAdj_pen_lower,", ",x$BaseAdj_pen_upper,")"),
                   paste0(x$ExtAdj_pen_est," (",x$ExtAdj_pen_lower,", ",x$ExtAdj_pen_upper,")")
     )
     
     
-    colnames(sums) <- c("Analysis","ResidRiskG", "RXobs","unadjusted penetrance Gzero", "adjusted penetrance Gzero","unadjusted penetrance useG", "adjusted penetrance useG") #Assign colnames
+    colnames(sums) <- c("Analysis","ResidRiskG", "RXobs","unadjusted penetrance Gzero", "unadjusted penetrance useG", "adjusted penetrance Gzero", "adjusted penetrance useG") #Assign colnames
     
     return(sums)
   }

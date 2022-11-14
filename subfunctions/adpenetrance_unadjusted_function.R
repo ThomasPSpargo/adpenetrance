@@ -15,8 +15,6 @@ adpenetrance.unadjusted <- function(N, MF=NA, MS=NA, MA=NA, MU=NA, PA=NA, PF=NA,
   #--------------------------------------------#
   #First, define the states modelled
   
-  #Perform these calculations only if RX is not given directly:
-  
   #Generate value for states term within the function - necessary to pass through states to adpenetrance.errorfit
   if(states=="none"){ 
     if(!is.na(MF) && !is.na(MS) && !is.na(MU) && is.na(MA)) {
@@ -53,117 +51,47 @@ adpenetrance.unadjusted <- function(N, MF=NA, MS=NA, MA=NA, MU=NA, PA=NA, PF=NA,
   #All valid combinations are defined and unacceptable selections will be stored as NA and the output will not be valid
   if(is.na(RX)){
     
-    if(states=="fsu") { #If familial, sporadic, unaffected specified, and affected not specified
-      X <- MF           #Familial state is state X
-      WeiX <- PF*PA     #Weighting variable
+    ### Set state X (and possibly Z)
+    if(grepl("f",states)) { #If familial specified in any state combination, then familial is state X
+      X <- MF
+      XSE <- MF_SE
+      if(grepl("u",states)) { #Weight according to the presence or absence of MU
+        WeiX <- PF*PA 
+      } else {
+        WeiX <- PF
+      }
       
-      Y <- MS           #Sporadic state is state Y
-      WeiY = (1-PF)*PA  #Weighting variable
-      
-      Z <- MU           #Unaffected is state Z (only used in this formulation - after this only X and Y need specification)
-      WeiZ <- 1-PA      #Weighting variable
-      
-      if(!is.na(MF_SE) && !is.na(MS_SE) && !is.na(MU_SE)) { #If error terms are given for all appropriate variables, define error terms
-        XSE <- MF_SE
-        YSE <- MS_SE
+      if(states=="fsu"){ #If all states, then define Z
+        Z <- MU
         ZSE <- MU_SE
-      } else if (!is.na(MF_SE) || !is.na(MS_SE) || !is.na(MU_SE)) { #If error terms are given for some but not all variables, do not define error terms and return warning message
-        XSE <- NA
-        YSE <- NA
-        ZSE <- NA
-        
-        warning("Error terms have only been given for a subset of the variant frequencies defined. Please ensure that these are given for all included states")
-        } else { 
-        XSE <- NA
-        YSE <- NA
-        ZSE <- NA
+        WeiZ <- 1-PA
       }
       
-    } else if(states=="fs") { #If familial and sporadic specified, and unaffected and affected not specified
-      X <- MF           #Familial state is state X
-      WeiX <- PF        
-      
-      Y <- MS           #Sporadic state is state Y
-      WeiY <- 1-PF      
-      
-      if(!is.na(MF_SE) && !is.na(MS_SE)) { #If error terms are given for all appropriate variables, define error terms
-        XSE <- MF_SE
-        YSE <- MS_SE
-      } else if (!is.na(MF_SE) || !is.na(MS_SE)) { #If error terms are given for some but not all variables, do not define error terms and return warning message
-        XSE <- NA
-        YSE <- NA
-        
-        warning("Error terms have only been given for a subset of the variant frequencies defined. Please ensure that these are given for all included states")
-      } else {
-        XSE <- NA
-        YSE <- NA
-      }
-      
-      
-    } else if(states=="fu") { #If familial and unaffected specified, and sporadic and affected not specified
-      X <- MF         #Familial state is X
-      WeiX <- PF*PA 
-      
-      Y <- MU         #Unaffected state is Y
-      WeiY <- 1-PA
-      
-      if(!is.na(MF_SE) && !is.na(MU_SE)) { #If error terms are given for all appropriate variables, define error terms
-        XSE <- MF_SE
-        YSE <- MU_SE
-      } else if (!is.na(MF_SE) || !is.na(MU_SE)) { #If error terms are given for some but not all variables, do not define error terms and return warning message
-        XSE <- NA
-        YSE <- NA
-        
-        warning("Error terms have only been given for a subset of the variant frequencies defined. Please ensure that these are given for all included states")
-      } else {
-        XSE <- NA
-        YSE <- NA
-      }
-      
-    } else if(states=="su") { #If sporadic and unaffected specified, and familial and affected not specified
-      X <- MS         #Sporadic state is X
+    } else if (states=="su") {
+      X <- MS
+      XSE <- MS_SE
       WeiX <- (1-PF)*PA
       
-      Y <- MU         #Unaffected state is Y
-      WeiY <- 1-PA
-      
-      if(!is.na(MS_SE) && !is.na(MU_SE)) { #If error terms are given for all appropriate variables, define error terms
-        XSE <- MS_SE
-        YSE <- MU_SE
-      } else if (!is.na(MS_SE) || !is.na(MU_SE)) { #If error terms are given for some but not all variables, do not define error terms and return warning message
-        XSE <- NA
-        YSE <- NA
-        
-        warning("Error terms have only been given for a subset of the variant frequencies defined. Please ensure that these are given for all included states")
-      } else {
-        XSE <- NA
-        YSE <- NA
-      }
-      
-    } else if(states=="au") { #If unaffected and affected specified, familial and sporadic not specified
-      X <- MA         #Affected state is X
+    } else if (states=="au") {
+      X <- MA
+      XSE <- MA_SE
       WeiX <- PA
-      
-      Y <- MU         #Unaffected state is Y
-      WeiY <- 1-PA
-      
-      if(!is.na(MA_SE) && !is.na(MU_SE)) { #If error terms are given for all appropriate variables, define error terms
-        XSE <- MA_SE
-        YSE <- MU_SE
-      } else if (!is.na(MA_SE) || !is.na(MU_SE)) { #If error terms are given for some but not all variables, do not define error terms and return warning message
-        XSE <- NA
-        YSE <- NA
-        
-        warning("Error terms have only been given for a subset of the variant frequencies defined. Please ensure that these are given for all included states")
+    }
+    
+    ### Set state Y
+    if(states %in% c("fsu","fs")){ 
+      Y <- MS
+      YSE <- MS_SE
+      if(grepl("u",states)) { #Weight according to the presence or absence of MU
+        WeiY = (1-PF)*PA
       } else {
-        XSE <- NA
-        YSE <- NA
+        WeiY <- 1-PF
       }
       
-    } else { #If no valid conditions are satisfied
-      
-      stop("No valid disease state combination has been defined. Variant frequency or RX estimates should be defined for any two or three of the familial, sporadic, and unaffected states or the affected and unaffected states. Please check that variant frequency estimates have been defined for a valid combination of states or that the 'RX' and 'states' arguments are properly defined.")
-      
+    } else if (states %in% c("fu", "su","au")) {
+      Y <- MU
+      YSE <- MU_SE
+      WeiY <- 1-PA
     }
 
     #Calculate the observed probability of disease state X (ObsProbX) from state data given
@@ -188,6 +116,11 @@ adpenetrance.unadjusted <- function(N, MF=NA, MS=NA, MA=NA, MU=NA, PA=NA, PF=NA,
         
         ObsProbXSE <- sqrt(DifX^2*XSE^2 + DifY^2*YSE^2 + DifZ^2*ZSE^2) #Use partial derivatives and Std errors to propagate error for observed probability of disease state X
         
+      } else if (states=="fsu" && is.na(ZSE)) {
+        #Warn if ZSE is missing
+        ObsProbXSE <- NA_real_
+        warning("Error terms have only been given for a subset of the defined variant frequencies defined. Please ensure that these are given for all included states")
+        
       } else { #In all other instances, calculate with respect to only X and Y
         
         DifX <- (WeiX*WeiY*Y)/((WeiX*X+WeiY*Y)^2) #Partial derivative of the ObsProbX calculation with respect to X
@@ -196,16 +129,18 @@ adpenetrance.unadjusted <- function(N, MF=NA, MS=NA, MA=NA, MU=NA, PA=NA, PF=NA,
         ObsProbXSE <- sqrt(DifX^2*XSE^2 + DifY^2*YSE^2) #Partial derivatives*Std errors+...= SE in ObsProbX
         
       }
-    } else {ObsProbXSE <- NA_real_} #If error terms not given, skip this operation
-    
-    
-    
+    } else if (!is.na(XSE) || !is.na(YSE)) {
+      #Warn if partial error terms are defined
+      ObsProbXSE <- NA_real_
+      warning("Error terms have only been given for a subset of the defined variant frequencies defined. Please ensure that these are given for all included states")
+      
+    } else { ObsProbXSE <- NA_real_} #If error terms not given, skip this operation
     
   } else if(!is.na(RX)){ #IF RX is specified directly, the above is skipped and ObsProbX is defined directly by the user
     
     #Pass error if any variant frequencies have also been defined
     if(any(!is.na(MF),!is.na(MS),!is.na(MU),!is.na(MA))){
-      stop("Input data have been provided for at least 1 variant frequency as well as RX. Please specify either the 'RX' and the 'states' terms, or specify variant frequency estimates and required weighting factors for each represented disease state")
+      stop("Input data have been provided for at least 1 variant frequency as well as RX. Please specify either the 'RX' and the 'states' argument, or specify variant frequency estimates and required weighting factors for each represented disease state")
     }
     
     ObsProbX = RX #Define ObsProbX directly from RX
@@ -292,122 +227,73 @@ adpenetrance.unadjusted <- function(N, MF=NA, MS=NA, MA=NA, MU=NA, PA=NA, PF=NA,
   loci <- matrix(NA,ncol=3,nrow=1)
   colnames(loci) <- c("Lower CI", "Estimate", "Upper CI")
   
+  
+  ## Prepare informative error message for use with tryCatch when indexing
+  matchfail<- function(match,matchType,ObsProbX,N,useG,states,LookupTable){
+    #Extract matched indices and sanitise for error reporting
+    matchtab <- LookupTable[match,]
+    colnames(matchtab) <- c("Expected RX_i","corresponding penetrance")
+    
+    message("------------------------------\n")
+    message("ADPenetrance error catch when indexing lookup table to identify expected disease state rate corresponding to",matchType,"RX.\nMultiple rows in the lookup table may have been matched.\nThis could reflect equal distance between the observed disease state rate and two positions in the lookup table.\nCurrent parameter details are as follows:")
+    
+    message("\nObserved disease state rate (RX):\n", ObsProbX)
+    message("\nEstimated average sibship size (N):\n", N)
+    message("\nEstimated residual disease risk (g):\n", useG)
+    message("\nStates modelled:\n",states)
+    
+    message("\nMatched row indices in lookup table (only 1 match is expected):\n",paste(match,collapse=", "))
+    message("\nCorresponding rows in lookup table:\n")
+    print(matchtab)
+    
+    message("Penetrance estimation will proceed using the first index matched.\n-----------------------------\n")
+  }
+  
   #Matching ObsProbX to closest LookupX - store the locus retrieved in 'loci' object defined above
   if(!is.na(ObsProbX)) {
     #Perform indexing; use trycatch to give more informative error handling
+    match <- which(abs(LookupTable[,1]-as.vector(ObsProbX))==min(abs(LookupTable[,1]-as.vector(ObsProbX)),na.rm=T)) #Locus for the estimate
     tryCatch(
-      loci[,"Estimate"] <- which(abs(LookupTable[,1]-as.vector(ObsProbX))==min(abs(LookupTable[,1]-as.vector(ObsProbX)),na.rm=T)) #Locus for the estimate
-      ,error = function(x){warning(x)
-        
-        #Extract matched indices and sanitise for error reporting
-        match<- which(abs(LookupTable[,1]-as.vector(ObsProbX))==min(abs(LookupTable[,1]-as.vector(ObsProbX)),na.rm=T))
-        matchtab <- LookupTable[match,]
-        colnames(matchtab) <- c("Expected RX_i","corresponding penetrance")
-        
-        cat("------------------------------\n")
-        cat("ADPenetrance error catch when indexing lookup table to identify expected disease state rate corresponding to RX.\n")
-        cat("Multiple rows in the lookup table may have been matched.\nThis could reflect equal distance between the observed disease state rate and two positions in the lookup table\n current parameter details are as follows:\n")
-        
-        cat("Observed disease state rate (RX):\n")
-        print(ObsProbX)
-        cat("Estimated average sibship size (N):\n")
-        print(N)
-        cat("Estimated residual disease risk (g):\n")
-        print(useG)
-        cat("States modelled:\n")
-        print(states)
-        
-        cat("Matched row indices in lookup table (only 1 match is expected):\n")
-        print(match)
-        cat("Corresponding rows in lookup table:\n")
-        print(matchtab)
-        
-        cat("Penetrance estimation will proceed using the first index match.\n")
-        loci[,"Estimate"] <<- match[1] #Locus for the estimate
-        cat("-----------------------------\n")
+      loci[,"Estimate"] <- match
+      ,error = function(x){
+        #Return error as warning, print message of current parameters, and then assign first match value
+        warning(x)
+        matchfail(match=match,matchType=" ",ObsProbX=ObsProbX,N=N,useG=useG,states=states,LookupTable=LookupTable)
+        loci[,"Estimate"] <<- match[1]
       }) #End trycatch
   }
   
   #If error propagation has been included:
-    #Repeat process at disease state rates observed at confidence interval bounds
+    #Repeat indexing process at disease state rates observed at confidence interval bounds and then build output matrix
+  #Otherwise, just build output matrix
   if(!is.na(ObsProbXSE)) {
+    #Perform indexing at upper and lower confidence interval bounds
+    matchLCI <- which(abs(LookupTable[,1]-as.vector(lowerCI))==min(abs(LookupTable[,1]-as.vector(lowerCI)),na.rm=T)) #Locus for the lower bound
+    matchUCI <- which(abs(LookupTable[,1]-as.vector(upperCI))==min(abs(LookupTable[,1]-as.vector(upperCI)),na.rm=T)) #Locus for the upper bound
     
-    #Perform indexing; use trycatch to give more informative error handling
+    #Assign index values and use trycatch to give more informative error handling if multiple matches are found
     tryCatch(
-      loci[,"Lower CI"] <- which(abs(LookupTable[,1]-as.vector(lowerCI))==min(abs(LookupTable[,1]-as.vector(lowerCI)),na.rm=T)) #Locus for the lower bound
-      ,error = function(x){warning(x)
-        
-        #Extract matched indices and sanitise for error reporting
-        match<- which(abs(LookupTable[,1]-as.vector(lowerCI))==min(abs(LookupTable[,1]-as.vector(lowerCI)),na.rm=T))
-        matchtab <- LookupTable[match,]
-        colnames(matchtab) <- c("Expected RX_i","corresponding penetrance")
-        
-        cat("------------------------------\n")
-        cat("ADPenetrance error catch when indexing lookup table to identify expected disease state rate corresponding to lower confidence interval of RX.\n")
-        cat("Multiple rows in the lookup table may have been matched.\nThis could reflect equal distance between the observed disease state rate and two positions in the lookup table\n current parameter details are as follows:\n")
-        
-        cat("Observed disease state rate (RX) lower CI value:\n")
-        print(lowerCI)
-        cat("Estimated average sibship size (N):\n")
-        print(N)
-        cat("Estimated residual disease risk (g):\n")
-        print(useG)
-        cat("States modelled:\n")
-        print(states)
-        
-        cat("Matched row indices in lookup table (only 1 match is expected):\n")
-        print(match)
-        cat("Corresponding rows in lookup table:\n")
-        print(matchtab)
-        
-        cat("Penetrance estimation will proceed using the first index match.\n")
-        loci[,"Lower CI"] <<- match[1] #Locus for the estimate
-        cat("-----------------------------\n")
-      }) #End trycatch
+      loci[,"Lower CI"] <- matchLCI
+      ,error = function(x){
+        #Return error as warning, print message of current parameters, and then assign first match value
+        warning(x)
+        matchfail(match=match,matchType=" lower confidence interval of ",ObsProbX=lowerCI,N=N,useG=useG,states=states,LookupTable=LookupTable)
+        loci[,"Lower CI"] <<- matchLCI[1]
+      })
     
-    #Perform indexing; use trycatch to give more informative error handling
     tryCatch(
-      loci[,"Upper CI"] <- which(abs(LookupTable[,1]-as.vector(upperCI))==min(abs(LookupTable[,1]-as.vector(upperCI)),na.rm=T)) #Locus for the upper bound
-      ,error = function(x){warning(x)
-        
-        #Extract matched indices and sanitise for error reporting
-        match<- which(abs(LookupTable[,1]-as.vector(upperCI))==min(abs(LookupTable[,1]-as.vector(upperCI)),na.rm=T))
-        matchtab <- LookupTable[match,]
-        colnames(matchtab) <- c("Expected RX_i","corresponding penetrance")
-        
-        cat("------------------------------\n")
-        cat("ADPenetrance error catch when indexing lookup table to identify expected disease state rate corresponding to upper confidence interval of RX.\n")
-        cat("Multiple rows in the lookup table may have been matched.\nThis could reflect equal distance between the observed disease state rate and two positions in the lookup table.\nCurrent parameter details are as follows:\n")
-        
-        cat("Observed disease state rate (RX) upper CI value:\n")
-        print(upperCI)
-        cat("Estimated average sibship size (N):\n")
-        print(N)
-        cat("Estimated residual disease risk (g):\n")
-        print(useG)
-        cat("States modelled:\n")
-        print(states)
-        
-        cat("Matched row indices in lookup table (only 1 match is expected):\n")
-        print(match)
-        cat("Corresponding rows in lookup table:\n")
-        print(matchtab)
-        
-        cat("Penetrance estimation will proceed using the first index match.\n")
-        loci[,"Upper CI"] <<- match[1]
-        cat("-----------------------------\n")
-      }) #End trycatch 
-      
-  }
-  
-  
-  #Build output matrix:
-  #Row 1: ObsProbX (with or without CI and standard error)
-  #Row 2: Value of LookupX closest to ObsProbX (with or without CI) - identified at row stored in 'loci' object
-  #Row 3: Penetrance estimate associated with LookupX (with or without CI)
-  if(!is.na(ObsProbXSE)) { #Include confidence intervals if propagation performed
+      loci[,"Upper CI"] <- matchUCI
+      ,error = function(x){
+        #Return error as warning, print message of current parameters, and then assign first match value
+        warning(x)
+        matchfail(match=match,matchType=" upper confidence interval of ",ObsProbX=upperCI,N=N,useG=useG,states=states,LookupTable=LookupTable)
+        loci[,"Upper CI"] <<- matchUCI[1]
+      })
    
-    
+    #Build output matrix:
+    #Row 1: ObsProbX (with or without CI and standard error)
+    #Row 2: Value of LookupX closest to ObsProbX (with or without CI) - identified at row stored in 'loci' object
+    #Row 3: Penetrance estimate associated with LookupX (with or without CI)
     Output = matrix(c(lowerCI, ObsProbX, upperCI, ObsProbXSE, #Estimate for X rate, with CI and SE given
                       LookupTable[,1][loci[,"Lower CI"]], LookupTable[,1][loci[,"Estimate"]], LookupTable[,1][loci[,"Upper CI"]], NA, #LookupX nearest estimate and CI
                       LookupTable[,2][loci[,"Lower CI"]], LookupTable[,2][loci[,"Estimate"]], LookupTable[,2][loci[,"Upper CI"]], NA #Corresponding penetrance estimate
@@ -416,7 +302,7 @@ adpenetrance.unadjusted <- function(N, MF=NA, MS=NA, MA=NA, MU=NA, PA=NA, PF=NA,
     
     colnames(Output) <- c("Lower CI","Estimate", "Upper CI", "Standard error")
     
-  } else {   #Create without confidence intervals
+  } else {
     
     Output = matrix(c(ObsProbX, #Estimate for X rate
                       LookupTable[,1][loci[,"Estimate"]], #LookupX nearest estimate
@@ -424,7 +310,6 @@ adpenetrance.unadjusted <- function(N, MF=NA, MS=NA, MA=NA, MU=NA, PA=NA, PF=NA,
                       ), #Adjusted penetrance estimate
                     ncol=1, nrow=3)
 
-    
     colnames(Output) <- c("Estimate")
   }
   

@@ -37,9 +37,16 @@ Cases_T2_freqs  <- Cases[c(36:39),]
 Cases_T2_counts_out <- NULL
 for(k in 1:length(Cases_T2_counts$Population_sampled)){
   
+  #If the variant frequency is attained by 0/0 division, NaN produced.
+  #This represents having no sampled familial or unaffected state, indicative of a variant frequency of ~0
+  #Accordingly, substitute NaN with 0
+  MU_get <- Cases_T2_counts[k,"Var_unaf"]/Cases_T2_counts[k,"N_unaffected"]
+  if(is.nan(MU_get)){MU_get <- 0}
+  
   #Compute the remaining disease for a population member who does not harbour the variant
   residualRiskG<- getResidualRisk(MF=Cases_T2_counts[k,"Var_fam"]/Cases_T2_counts[k,"N_familial"],
                                   MS=Cases_T2_counts[k,"Var_spor"]/Cases_T2_counts[k,"N_sporadic"],
+                                  MU=MU_get,
                                   PF=Cases_T2_counts[k,"PF"],
                                   PA=1/Cases_T2_counts[k,"PA"])
   
@@ -171,6 +178,7 @@ for(k in 1:length(Cases_T2_freqs$Population_sampled)){
   #Compute the remaining disease for a population member who does not harbour the variant
   residualRiskG<- getResidualRisk(MF=Cases_T2_freqs[k,"Freq_fam"],
                                   MS=Cases_T2_freqs[k,"Freq_spor"],
+                                  MU=0, #Reflecting rare variants, MU is ~0 in these examples
                                   PF=Cases_T2_freqs[k,"PF"],
                                   PA=1/Cases_T2_freqs[k,"PA"])
   
