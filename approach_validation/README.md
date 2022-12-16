@@ -1,5 +1,5 @@
 ## ADPenetrance approach validation steps
-___Updated 18/10/2022___
+___Updated 16/12/2022___
 
 _The repository is maintained by Thomas Spargo (<thomas.spargo@kcl.ac.uk>) - please reach out with any questions._
 
@@ -13,7 +13,7 @@ ___
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; __MLE_validation.R__
 
-* This script calls `adpenetrance_MLE_function.R` and `case_data.csv` to make penetrance estimates for those case studies presented in Table 2 of the associated manuscript ([1](https://doi.org/10.1101/2021.03.16.21253691)).
+* This script calls `adpenetrance_MLE_function.R` and `case_data.csv` to make penetrance estimates for those case studies presented in Table 2 of the associated manuscript ([1](https://doi.org/10.1186/s13073-022-01142-7)).
 
 * This re-analysis compares unadjusted penetrance estimates obtained from the lookup table approach employed within the main `adpenetrance` function to those obtained via a maximum likelihood method.
 
@@ -79,7 +79,7 @@ The set of `TimeSimulation*.R` scripts, draw upon the `simADPenetrance` [functio
 ___
 
 #### References
-1. Spargo, T. P., Opie-Martin, S., Lewis, C. M., Iacoangeli, A., & Al-Chalabi, A. (2021). Calculating variant penetrance using family history of disease and population data. *medRxiv* 2021.03.16.21253691; doi: 10.1101/2021.03.16.21253691
+1. Spargo, T.P., Opie-Martin, S., Bowles, H., Lewis, C. M., Iacoangeli, A., & Al-Chalabi, A. (2022). Calculating variant penetrance from family history of disease and average family size in population-scale data. *Genome Med* 14, 141. doi: 10.1186/s13073-022-01142-7
 
 2. Office for National Statistics. Childbearing for women born in different years. 2020. Available from: https://www.ons.gov.uk/peoplepopulationandcommunity/birthsdeathsandmarriages/conceptionandfertilityrates/datasets/childbearingforwomenbornindifferentyearsreferencetable
 

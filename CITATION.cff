@@ -1,11 +1,11 @@
-# This CITATION.cff file was generated with cffinit.
+# This CITATION.cff file was initially generated with cffinit.
 # Visit https://bit.ly/cffinit to generate yours today!
 
 cff-version: 1.2.0
 title: ADPenetrance
 message: >-
-  Please cite this dataset using the metadata from
-  doi: 10.1101/2021.03.16.21253691.
+  Please cite this software using the reference for the associated publication
+  doi: 10.1186/s13073-022-01142-7.
 type: software
 authors:
   - given-names: Thomas P
@@ -18,6 +18,11 @@ authors:
     email: sarah.martin@kcl.ac.uk
     affiliation: King's College London
     orcid: 'https://orcid.org/0000-0003-0951-8589'
+  - given-names: Harry
+    family-names: Bowles
+    email: harry.bowles@kcl.ac.uk
+    affiliation: King's College London
+    orcid: 'https://orcid.org/0000-0002-4072-5255'
   - given-names: Cathryn M
     family-names: Lewis
     email: cathryn.lewis@kcl.ac.uk
@@ -33,9 +38,42 @@ authors:
     email: ammar.al-chalabi@kcl.ac.uk
     orcid: 'https://orcid.org/0000-0002-4924-7712'
     affiliation: King's College London
-identifiers:
-  - type: doi
-    value: 10.1101/2021.03.16.21253691
-    description: >-
-      Calculating variant penetrance using family
-      history of disease and population data
+preferred-citation:
+  type: article
+  authors:
+  - given-names: Thomas P
+    family-names: Spargo
+    email: thomas.spargo@kcl.ac.uk
+    affiliation: King's College London
+    orcid: 'https://orcid.org/0000-0003-4297-6418'
+  - given-names: Sarah
+    family-names: Opie-Martin
+    email: sarah.martin@kcl.ac.uk
+    affiliation: King's College London
+    orcid: 'https://orcid.org/0000-0003-0951-8589'
+  - given-names: Harry
+    family-names: Bowles
+    email: harry.bowles@kcl.ac.uk
+    affiliation: King's College London
+    orcid: 'https://orcid.org/0000-0002-4072-5255'
+  - given-names: Cathryn M
+    family-names: Lewis
+    email: cathryn.lewis@kcl.ac.uk
+    affiliation: King's College London
+    orcid: 'https://orcid.org/0000-0002-8249-8476'
+  - given-names: Alfredo
+    family-names: Iacoangeli
+    email: alfredo.iacoangeli@kcl.ac.uk
+    affiliation: King's College London
+    orcid: 'https://orcid.org/0000-0002-5280-5017'
+  - given-names: Ammar
+    family-names: Al-Chalabi
+    email: ammar.al-chalabi@kcl.ac.uk
+    orcid: 'https://orcid.org/0000-0002-4924-7712'
+    affiliation: King's College London
+  doi: '10.1186/s13073-022-01142-7'
+  journal: 'Genome Medicine'
+  title: 'Calculating variant penetrance from family history of disease and average family size in population-scale data'
+  volume: 14
+  pages: 141
+  year: 2022

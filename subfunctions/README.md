@@ -1,5 +1,5 @@
 ## ADPenetrance subfunctions
-___Updated 17/10/2022___
+___Updated 16/12/2022___
 
 _The repository is maintained by Thomas Spargo (<thomas.spargo@kcl.ac.uk>) - please reach out with any questions._
 ___
@@ -8,7 +8,7 @@ ___
 * This script loads the `adpenetrance.errorfit` function which fits a polynomial regression model to predict error in unadjusted penetrance estimates made within `adpenetrance`.
 * `adpenetrance.errorfit` will call the `adpenetrance.unadjusted` function in order to make unadjusted penetrance estimates for simulated variants of penetrance between 0 and 1 occuring within a simulated population. The polynomial regression model produced by `adpenetrance.errorfit` is fitted according to differences between the estimated and true penetrance values of each variant simulated.
 * The unadjusted penetrance value obtained by `adpenetrance` is then adjusted by error predicted in this estimate under the fitted model to determine the final adjusted penetrance estimate.
-* See [1](https://doi.org/10.1101/2021.03.16.21253691) and the ADPenetrance [documentation](https://github.com/ThomasPSpargo/adpenetrance/wiki/ADPenetrance) for further details.
+* See [1](https://doi.org/10.1186/s13073-022-01142-7) and the ADPenetrance [documentation](https://github.com/ThomasPSpargo/adpenetrance/wiki/ADPenetrance) for further details.
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; __adpenetrance_unadjusted_function.R__
 * This script loads the `adpenetrance.unadjusted` function which performs steps 1-3 of the `adpenetrance` approach, providing unadjusted penetrance estimates.
@@ -36,4 +36,4 @@ ___
 ___
   
 #### References
-1. Spargo, T. P., Opie-Martin, S., Lewis, C. M., Iacoangeli, A., & Al-Chalabi, A. (2021). Calculating variant penetrance using family history of disease and population data. *medRxiv* 2021.03.16.21253691; doi: 10.1101/2021.03.16.21253691
+1. Spargo, T.P., Opie-Martin, S., Bowles, H., Lewis, C. M., Iacoangeli, A., & Al-Chalabi, A. (2022). Calculating variant penetrance from family history of disease and average family size in population-scale data. *Genome Med* 14, 141. doi: 10.1186/s13073-022-01142-7
